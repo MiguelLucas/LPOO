@@ -19,7 +19,7 @@
 * Drop rates
 * Locked doors and keys
 
-##To think about: 
+##To think about 
 * Scores
 * Increase speed and/or size
 * Changing colors (faking a different cenario) 
