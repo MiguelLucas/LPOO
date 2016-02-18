@@ -4,6 +4,7 @@
 * Spear
 * Enhanced random generation (multiple paths)
 * Full feature customization
+* Power ups
 
 ##Medium-Priority
 
