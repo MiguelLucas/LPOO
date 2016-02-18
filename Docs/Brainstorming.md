@@ -3,6 +3,7 @@
 * Fog of War (Top!)
 * Spear
 * Enhanced random generation (multiple paths)
+* Full feature customization
 
 ##Medium-Priority
 
