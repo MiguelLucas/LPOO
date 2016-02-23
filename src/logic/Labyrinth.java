@@ -6,7 +6,10 @@ public class Labyrinth {
 
 	public Labyrinth() {}
 	
-	private static String[][] labyrinth = 
+	private Hero hero = new Hero();
+	private Sword sword = new Sword();
+	
+	private String[][] labyrinth = 
 		{{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "},
 		{"X ","H ","  ","  ","  ","  ","  ","  ","  ","X "},
 		{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
@@ -19,22 +22,28 @@ public class Labyrinth {
 		{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "}};
 	
 
-	private static Hero hero = new Hero();
 	
 	
-	public static String[][] getLabyrinth() {
+	
+	public String[][] getLabyrinth() {
 		return labyrinth;
 	}
-	public static void setLabyrinth(String[][] labyrinth) {
-		Labyrinth.labyrinth = labyrinth;
+	public void setLabyrinth(String[][] labyrinth) {
+		this.labyrinth = labyrinth;
 	}
-	public static Hero getHero() {
+	public Hero getHero() {
 		return hero;
 	}
-	public static void setHero(Hero hero) {
-		Labyrinth.hero = hero;
+	public void setHero(Hero hero) {
+		this.hero = hero;
 	}
-	public static void move_hero(){
+	public Sword getSword() {
+		return sword;
+	}
+	public void setSword(Sword sword) {
+		this.sword = sword;
+	}
+	public void move_hero(){
 		System.out.println("-------------------------");
 		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
 		Scanner sc = new Scanner(System.in);
@@ -62,59 +71,76 @@ public class Labyrinth {
 			move_hero();
 			break;
 		}
+		if (position_has_sword(hero.getX(),hero.getY()))
+				hero_catches_sword();
 		
 	}
-	// apagar antiga e escrever a nova 
-	public static void move_up(){
-		if(labyrinth[hero.getY()-1][hero.getX()] == "  " || labyrinth[hero.getY()-1][hero.getX()] == "E "){
+	
+	public void move_up(){
+		if(labyrinth[hero.getY()-1][hero.getX()] == "  " || position_has_sword(hero.getX(),hero.getY()-1)){
 			labyrinth[hero.getY()][hero.getX()] = "  ";
 			hero.setY(hero.getY()-1);
-			labyrinth[hero.getY()][hero.getX()] = "H ";
 		}
 	}
 	
-	public static void move_down(){
-		if(labyrinth[hero.getY()+1][hero.getX()] == "  " || labyrinth[hero.getY()+1][hero.getX()] == "E "){
+	public void move_down(){
+		if(labyrinth[hero.getY()+1][hero.getX()] == "  " || position_has_sword(hero.getX(),hero.getY()+1)){
 			labyrinth[hero.getY()][hero.getX()] = "  ";
 			hero.setY(hero.getY()+1);
-			labyrinth[hero.getY()][hero.getX()] = "H ";
 		}
 	}
 	
-	public static void move_left(){
-		if(labyrinth[hero.getY()][hero.getX()-1] == "  " || labyrinth[hero.getY()][hero.getX()-1] == "E "){
+	public void move_left(){
+		if(labyrinth[hero.getY()][hero.getX()-1] == "  " || position_has_sword(hero.getX()-1,hero.getY())){
 			labyrinth[hero.getY()][hero.getX()] = "  ";
 			hero.setX(hero.getX()-1);
-			labyrinth[hero.getY()][hero.getX()] = "H ";
 		}
 			
 	}
-	public static void move_right(){
-		if(labyrinth[hero.getY()][hero.getX()+1] == "  " || labyrinth[hero.getY()][hero.getX()+1] == "E "){
+	public void move_right(){
+		if(labyrinth[hero.getY()][hero.getX()+1] == "  " || position_has_sword(hero.getX()+1,hero.getY())){
 			labyrinth[hero.getY()][hero.getX()] = "  ";
 			hero.setX(hero.getX()+1);
-			labyrinth[hero.getY()][hero.getX()] = "H ";
 		}
 	}
+	
+	public boolean position_has_sword(int x,int y){
+		if (sword.getX() == x && sword.getY() == y)
+			return true;
+		else
+			return false;
+	}
+	
+	public void hero_catches_sword(){
+		hero.setIcon("A ");
+		hero.setArmedSword(true);
+		sword.setIcon("X ");
+		sword.setX(0);
+		sword.setY(0);
+	}
+	
 	public static void main(String[] args) {
+		Labyrinth l = new Labyrinth();
 		while (true){
-			print_labyrinth(labyrinth);
-			move_hero();
+			l.print_labyrinth();
+			l.move_hero();
 		}
-		
-		//System.out.println(labyrinth);
 	}
 
-	public static void print_labyrinth(String[][] lab){
+	public void print_labyrinth(){
+		//coloca o heroi e a espada no labirinto
+		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
+		this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
+		//nao tenho a certeza qual a forma mais correta de fazer isto. a de cima ou de baixo
+		//this.labyrinth[this.getSword().getY()][this.getSword().getX()] = this.getSword().getIcon();
+		
+		//imprime o labirinto
 		for(int i=0;i<10;i++){
 			for(int j=0;j<10;j++){
-				System.out.print(lab[i][j]);
+				System.out.print(this.getLabyrinth()[i][j]);
 			}
 			System.out.println();	
 		}
-		//função print_hero
-		
-		
 	}
 	
 	
