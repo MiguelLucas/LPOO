@@ -93,7 +93,8 @@ public class Labyrinth {
 	}
 	
 	public boolean validPosition(int x, int y){
-		if (labyrinth[y][x] == "  " || position_has_sword(x,y) || positionHasDeadDragon(x,y)){
+		if (labyrinth[y][x] == "  " || position_has_sword(x,y) 
+				|| positionHasDeadDragon(x,y) || !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -171,12 +172,19 @@ public class Labyrinth {
 			return false;
 	}
 	
+	public boolean positionHasHero(int x, int y){
+		if (hero.getX() == x && hero.getY() == y)
+			return true;
+		else
+			return false;
+	}
 	public void hero_catches_sword(){
 		hero.setIcon("A ");
 		hero.setArmedSword(true);
 		sword.setIcon("X ");
 		sword.setX(0);
 		sword.setY(0);
+		System.out.println("You picked up the Sword!");
 	}
 	
 	
@@ -215,26 +223,45 @@ public class Labyrinth {
 
 			switch (pos){
 			case 0:
-				if(labyrinth[dragon.getY()-1][dragon.getX()] != "X ")
-					move_up(dragon);
+				if(labyrinth[dragon.getY()-1][dragon.getX()] != "X "){
+					//opcao 1
+					//impedir o dragao de se mexer para a mesma posição do dragão
+					//codigo torna-se menos legivel
+					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+						break;
+					else
+						move_up(dragon);
+				}
 				else
 					moveDragon();
 				break; 
 			case 1:
-				if(labyrinth[dragon.getY()+1][dragon.getX()] != "X ")
-					move_down(dragon);
+				if(labyrinth[dragon.getY()+1][dragon.getX()] != "X "){
+					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+						break;
+					else
+						move_down(dragon);
+				}
 				else
 					moveDragon();
 				break;
 			case 2:
-				if(labyrinth[dragon.getY()][dragon.getX()-1] != "X ")
-					move_left(dragon);
+				if(labyrinth[dragon.getY()][dragon.getX()-1] != "X "){
+					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+						break;
+					else
+						move_left(dragon);
+				}
 				else
 					moveDragon();
 				break;
 			case 3:
-				if(labyrinth[dragon.getY()][dragon.getX()+1] != "X ")
-					move_right(dragon);
+				if(labyrinth[dragon.getY()][dragon.getX()+1] != "X "){
+					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+						break;
+					else
+						move_right(dragon);
+				}
 				else
 					moveDragon();
 				break;
@@ -287,7 +314,7 @@ public class Labyrinth {
 			System.out.println("You're winner!");
 		}
 		else
-			System.out.println("You were eaten by Dragon Senas.");
+			System.out.println("YOU DIED\nYou were eaten by Dragon Senas.");
 			
 		System.exit(0);
 	}

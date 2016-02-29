@@ -25,17 +25,17 @@ public class Dragon extends Item {
 	public void setDead(boolean isDead) {
 		this.isDead = isDead;
 	}
-	public void goToSleep(){
+	public void goToSleep(int sleepRate){
 		if(!isDead){
-		Random sleepiness = new Random();
-		if(sleepiness.nextInt(99)<20){
-			isSleeping = true; 
-			setIcon("d ");
-		}
-		else{
-			isSleeping = false; 
-			setIcon("D ");
-		}
+			Random sleepiness = new Random();
+			if(sleepiness.nextInt(99) < sleepRate){
+				isSleeping = true; 
+				setIcon("d ");
+			}
+			else{
+				isSleeping = false; 
+				setIcon("D ");
+			}
 		}
 	}
 	
