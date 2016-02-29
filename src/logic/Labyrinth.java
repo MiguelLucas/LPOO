@@ -53,7 +53,6 @@ public class Labyrinth {
 		this.dragon = dragon;
 	}
 	public void move_hero(){
-		System.out.println("-------------------------");
 		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
 		Scanner sc = new Scanner(System.in);
 		char move = Character.toUpperCase(sc.next().charAt(0));
@@ -83,10 +82,26 @@ public class Labyrinth {
 		if (position_has_sword(hero.getX(),hero.getY()))
 				hero_catches_sword();
 		
+		if (positionHasDeadDragon(hero.getX(),hero.getY())){
+			//junta o 1º carater do icone do heroi com o 1º carater do dragao
+			//é feito desta forma porque o heroi pode ter vários icones diferentes
+			hero.setIcon(hero.getIcon().substring(0,1) + dragon.getIcon().substring(0,1));
+		}
+		else
+			hero.setIcon(hero.getIcon().substring(0,1) + " ");
+		
+	}
+	
+	public boolean validPosition(int x, int y){
+		if (labyrinth[y][x] == "  " || position_has_sword(x,y) || positionHasDeadDragon(x,y)){
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	public void move_up(Item i1){
-		if(labyrinth[i1.getY()-1][i1.getX()] == "  " || position_has_sword(i1.getX(),i1.getY()-1)){
+		if (validPosition(i1.getX(),i1.getY()-1)){
 			labyrinth[i1.getY()][i1.getX()] = "  ";
 			i1.setY(i1.getY()-1);
 		}
@@ -100,7 +115,7 @@ public class Labyrinth {
 	}
 	
 	public void move_down(Item i1){
-		if(labyrinth[i1.getY()+1][i1.getX()] == "  " || position_has_sword(i1.getX(),i1.getY()+1)){
+		if(validPosition(i1.getX(),i1.getY()+1)){
 			labyrinth[i1.getY()][i1.getX()] = "  ";
 			i1.setY(i1.getY()+1);
 		}
@@ -114,7 +129,7 @@ public class Labyrinth {
 	}
 	
 	public void move_left(Item i1){
-		if(labyrinth[i1.getY()][i1.getX()-1] == "  " || position_has_sword(i1.getX()-1,i1.getY())){
+		if(validPosition(i1.getX()-1,i1.getY())){
 			labyrinth[i1.getY()][i1.getX()] = "  ";
 			i1.setX(i1.getX()-1);
 		}
@@ -127,7 +142,7 @@ public class Labyrinth {
 		}	
 	}
 	public void move_right(Item i1){
-		if(labyrinth[i1.getY()][i1.getX()+1] == "  " || position_has_sword(i1.getX()+1,i1.getY())){
+		if(validPosition(i1.getX()+1,i1.getY())){
 			labyrinth[i1.getY()][i1.getX()] = "  ";
 			i1.setX(i1.getX()+1);
 		}
@@ -144,6 +159,14 @@ public class Labyrinth {
 	public boolean position_has_sword(int x,int y){
 		if (sword.getX() == x && sword.getY() == y)
 			return true;
+		else
+			return false;
+	}
+	
+	public boolean positionHasDeadDragon(int x, int y){
+		if (dragon.getX() == x && dragon.getY() == y && dragon.isDead()){
+			return true;
+		}
 		else
 			return false;
 	}
@@ -193,25 +216,25 @@ public class Labyrinth {
 			switch (pos){
 			case 0:
 				if(labyrinth[dragon.getY()-1][dragon.getX()] != "X ")
-				move_up(dragon);
+					move_up(dragon);
 				else
 					moveDragon();
 				break; 
 			case 1:
 				if(labyrinth[dragon.getY()+1][dragon.getX()] != "X ")
-				move_down(dragon);
+					move_down(dragon);
 				else
 					moveDragon();
 				break;
 			case 2:
 				if(labyrinth[dragon.getY()][dragon.getX()-1] != "X ")
-					move_down(dragon);
+					move_left(dragon);
 				else
 					moveDragon();
 				break;
 			case 3:
 				if(labyrinth[dragon.getY()][dragon.getX()+1] != "X ")
-					move_up(dragon);
+					move_right(dragon);
 				else
 					moveDragon();
 				break;
@@ -223,12 +246,19 @@ public class Labyrinth {
 			sword.setIcon("F ");
 		else
 			sword.setIcon("E ");
+		
+		if (positionHasDeadDragon(dragon.getX(),dragon.getY())){
+			//a rever quando forem criados mais dragões
+			dragon.setIcon(dragon.getIcon().substring(0,1) + dragon.getIcon().substring(0,1));
+		}
+		else
+			dragon.setIcon(dragon.getIcon().substring(0,1) + " ");
 	}
 
 	public void print_labyrinth(){
 		//coloca o heroi e a espada no labirinto
-		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
 		this.labyrinth[dragon.getY()][dragon.getX()] = dragon.getIcon();
+		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
 		this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
 		//imprime o labirinto
 		for(int i=0;i<10;i++){
@@ -237,6 +267,18 @@ public class Labyrinth {
 			}
 			System.out.println();	
 		}
+		print_inventory();
+	}
+	
+	public void print_inventory(){
+		System.out.println("----------------------");
+		System.out.println("Hero's inventory: ");
+		if (hero.isArmedSword())
+			System.out.println("1x Sword ");
+		else
+			System.out.println("Nothing");
+		//a acrescentar mais items conforme se vão criando
+		System.out.println("----------------------");
 	}
 	
 	public void gameOver(boolean win){
