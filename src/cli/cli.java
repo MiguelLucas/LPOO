@@ -55,7 +55,8 @@ public class cli {
 				launchGame(game);
 				break; 
 			case 2: 
-				//
+				buildMaze(game);
+				launchGame(game);
 				break; 
 			case 3:
 				menuSettings(game);
@@ -68,6 +69,23 @@ public class cli {
 		}
 	}
 
+	public static void buildMaze(GameState game){
+		System.out.println("Choose labyrinth size (odd number greater than 6):");
+		int size = 2;
+
+		while (size%2 == 0 || size < 7){
+			try {
+			Scanner sc = new Scanner(System.in);
+			size = sc.nextInt();
+			if (size%2 == 0 || size < 7)
+				System.out.println("Choose an odd number greater than 6! ");
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid value!");
+			} 
+		}
+		game.generateLabyrinth(size);
+	}
+	
 	public static void menuSettings(GameState game){
 		int opt = -1;
 		while(opt < 0 || opt > 3){

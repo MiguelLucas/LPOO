@@ -288,8 +288,8 @@ public class Labyrinth {
 		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
 		this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
 		//imprime o labirinto
-		for(int i=0;i<10;i++){
-			for(int j=0;j<10;j++){
+		for(int i=0;i<labyrinth[0].length;i++){
+			for(int j=0;j<labyrinth[1].length;j++){
 				System.out.print(this.getLabyrinth()[i][j]);
 			}
 			System.out.println();	
