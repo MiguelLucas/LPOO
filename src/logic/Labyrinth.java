@@ -7,6 +7,8 @@ public class Labyrinth {
 
 	public Labyrinth() {}
 	
+	public Labyrinth(String[][] labyrinth) { this.labyrinth = labyrinth;}
+	
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
 	private Dragon dragon = new Dragon();
@@ -23,9 +25,6 @@ public class Labyrinth {
 		{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
 		{"X ","E ","X ","X ","  ","  ","  ","  ","  ","X "},
 		{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "}};
-	
-
-	
 	
 	
 	public String[][] getLabyrinth() {
@@ -209,6 +208,7 @@ public class Labyrinth {
 					(hero.getX()==dragon.getX()-1 && hero.getY()==dragon.getY()) ||
 					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()+1) ||
 					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()-1)){
+				hero.setDead(true);
 				gameOver(false);
 			}
 		}
@@ -286,7 +286,7 @@ public class Labyrinth {
 		//coloca o heroi e a espada no labirinto
 		this.labyrinth[dragon.getY()][dragon.getX()] = dragon.getIcon();
 		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
-		this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
+		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
 		//imprime o labirinto
 		for(int i=0;i<labyrinth[0].length;i++){
 			for(int j=0;j<labyrinth[1].length;j++){
@@ -316,7 +316,7 @@ public class Labyrinth {
 		else
 			System.out.println("YOU DIED\nYou were eaten by Dragon Senas.");
 			
-		System.exit(0);
+		//System.exit(0);
 	}
 
 }
