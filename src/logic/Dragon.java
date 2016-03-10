@@ -2,12 +2,14 @@ package logic;
 
 import java.util.Random;
 
+import logic.Item.Position;
+
 public class Dragon extends Item {
 	private boolean isSleeping;	
 	private boolean isDead;	
 	public Dragon(){
-		this.setX(1);
-		this.setY(3);
+		Position p1 = new Position(1, 3);
+		this.setPosition(p1);
 		this.setIcon("D ");
 		this.isSleeping = false;
 		this.isDead = false;

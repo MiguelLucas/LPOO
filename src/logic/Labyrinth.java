@@ -1,7 +1,10 @@
 package logic;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+
+import logic.Item.Position;
 
 public class Labyrinth {
 
@@ -11,7 +14,7 @@ public class Labyrinth {
 	
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
-	private Dragon dragon = new Dragon();
+	private ArrayList<Dragon> dragons = new ArrayList<Dragon>(); 
 	
 	
 	private String[][] labyrinth = 
@@ -45,11 +48,11 @@ public class Labyrinth {
 	public void setSword(Sword sword) {
 		this.sword = sword;
 	}
-	public Dragon getDragon() {
-		return dragon;
+	public ArrayList<Dragon> getDragons() {
+		return dragons;
 	}
-	public void setDragon(Dragon dragon) {
-		this.dragon = dragon;
+	public void setDragons(ArrayList<Dragon> dragons) {
+		this.dragons = dragons;
 	}
 	public void move_hero(){
 		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
@@ -78,13 +81,15 @@ public class Labyrinth {
 			move_hero();
 			break;
 		}
-		if (position_has_sword(hero.getX(),hero.getY()))
+		if (position_has_sword(hero.getPosition().getX(),hero.getPosition().getY()))
 				hero_catches_sword();
 		
-		if (positionHasDeadDragon(hero.getX(),hero.getY())){
+		
+		if (positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()) != null){
 			//junta o 1º carater do icone do heroi com o 1º carater do dragao
 			//é feito desta forma porque o heroi pode ter vários icones diferentes
-			hero.setIcon(hero.getIcon().substring(0,1) + dragon.getIcon().substring(0,1));
+			hero.setIcon(hero.getIcon().substring(0,1) +
+					positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()).getIcon().substring(0,1));
 		}
 		else
 			hero.setIcon(hero.getIcon().substring(0,1) + " ");
@@ -93,7 +98,7 @@ public class Labyrinth {
 	
 	public boolean validPosition(int x, int y){
 		if (labyrinth[y][x] == "  " || position_has_sword(x,y) 
-				|| positionHasDeadDragon(x,y) || !positionHasHero(x,y)){
+				|| positionHasDeadDragon(x,y) != null && !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -101,78 +106,110 @@ public class Labyrinth {
 	}
 	
 	public void move_up(Item i1){
-		if (validPosition(i1.getX(),i1.getY()-1)){
-			labyrinth[i1.getY()][i1.getX()] = "  ";
-			i1.setY(i1.getY()-1);
+		if (validPosition(i1.getPosition().getX(),i1.getPosition().getY()-1)){
+			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+			i1.getPosition().setY(i1.getPosition().getY()-1);
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
-			if (labyrinth[i1.getY()-1][i1.getX()] == "S " && dragon.isDead()){
-				labyrinth[i1.getY()][i1.getX()] = "  ";
-				i1.setX(i1.getY()-1);
+			boolean allDead = true;
+			for (int i=0;i<dragons.size();i++){
+				if (!dragons.get(i).isDead()){
+					allDead = false;
+					break;
+				}	
+			}
+			if (allDead && labyrinth[i1.getPosition().getY()-1][i1.getPosition().getX()] == "S "){
+				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+				i1.getPosition().setX(i1.getPosition().getY()-1);
 				gameOver(true);
-			}	
+			}
 		}
 	}
-	
+
 	public void move_down(Item i1){
-		if(validPosition(i1.getX(),i1.getY()+1)){
-			labyrinth[i1.getY()][i1.getX()] = "  ";
-			i1.setY(i1.getY()+1);
+		if(validPosition(i1.getPosition().getX(),i1.getPosition().getY()+1)){
+			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+			i1.getPosition().setY(i1.getPosition().getY()+1);
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
-			if (labyrinth[i1.getY()+1][i1.getX()] == "S " && dragon.isDead()){
-				labyrinth[i1.getY()][i1.getX()] = "  ";
-				i1.setX(i1.getY()+1);
+			boolean allDead = true;
+			for (int i=0;i<dragons.size();i++){
+				if (!dragons.get(i).isDead()){
+					allDead = false;
+					break;
+				}	
+			}
+			if (allDead && labyrinth[i1.getPosition().getY()+1][i1.getPosition().getX()] == "S "){
+				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+				i1.getPosition().setX(i1.getPosition().getY()+1);
 				gameOver(true);
-			}	
+			}
 		}
 	}
 	
 	public void move_left(Item i1){
-		if(validPosition(i1.getX()-1,i1.getY())){
-			labyrinth[i1.getY()][i1.getX()] = "  ";
-			i1.setX(i1.getX()-1);
+		if(validPosition(i1.getPosition().getX()-1,i1.getPosition().getY())){
+			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+			i1.getPosition().setX(i1.getPosition().getX()-1);
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
-			if (labyrinth[i1.getY()][i1.getX()-1] == "S " && dragon.isDead()){
-				labyrinth[i1.getY()][i1.getX()] = "  ";
-				i1.setX(i1.getX()-1);
+			boolean allDead = true;
+			for (int i=0;i<dragons.size();i++){
+				if (!dragons.get(i).isDead()){
+					allDead = false;
+					break;
+				}	
+			}
+			if (allDead && labyrinth[i1.getPosition().getY()][i1.getPosition().getX()-1] == "S "){
+				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+				i1.getPosition().setX(i1.getPosition().getX()-1);
 				gameOver(true);
-			}	
+			}
 		}	
 	}
+	
 	public void move_right(Item i1){
-		if(validPosition(i1.getX()+1,i1.getY())){
-			labyrinth[i1.getY()][i1.getX()] = "  ";
-			i1.setX(i1.getX()+1);
+		if(validPosition(i1.getPosition().getX()+1,i1.getPosition().getY())){
+			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+			i1.getPosition().setX(i1.getPosition().getX()+1);
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
-			if (labyrinth[i1.getY()][i1.getX()+1] == "S " && dragon.isDead()){
-				labyrinth[i1.getY()][i1.getX()] = "  ";
-				i1.setX(i1.getX()+1);
+			boolean allDead = true;
+			for (int i=0;i<dragons.size();i++){
+				if (!dragons.get(i).isDead()){
+					allDead = false;
+					break;
+				}	
+			}
+			if (allDead && labyrinth[i1.getPosition().getY()][i1.getPosition().getX()+1] == "S "){
+				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+				i1.getPosition().setX(i1.getPosition().getX()+1);
 				gameOver(true);
-			}	
+			}
 		}
 	}
 	
 	
 	public boolean position_has_sword(int x,int y){
-		if (sword.getX() == x && sword.getY() == y)
+		if (sword.getPosition().getX() == x && sword.getPosition().getY() == y)
 			return true;
 		else
 			return false;
 	}
 	
-	public boolean positionHasDeadDragon(int x, int y){
-		if (dragon.getX() == x && dragon.getY() == y && dragon.isDead()){
-			return true;
+	//testar retornar objeto
+	public Dragon positionHasDeadDragon(int x, int y){
+		for (int i=0;i<dragons.size();i++){
+			Position p1 = new Position(x, y);
+			if (dragons.get(i).getPosition().equals(p1) && dragons.get(i).isDead()){
+				return dragons.get(i);
+			}
 		}
-		else
-			return false;
+		return null;
 	}
 	
 	public boolean positionHasHero(int x, int y){
-		if (hero.getX() == x && hero.getY() == y)
+		if (hero.getPosition().getX() == x && hero.getPosition().getY() == y)
 			return true;
 		else
 			return false;
@@ -181,26 +218,35 @@ public class Labyrinth {
 		hero.setIcon("A ");
 		hero.setArmedSword(true);
 		sword.setIcon("X ");
-		sword.setX(0);
-		sword.setY(0);
+		sword.getPosition().setX(0);
+		sword.getPosition().setY(0);
 		System.out.println("You picked up the Sword!");
 	}
 	
 	
-	public void heroKillsDragon(){
+	public void heroKillsDragon(Dragon d1){
 		if(hero.isArmedSword()){
-			if((hero.getX()==dragon.getX() && hero.getY()==dragon.getY()) ||
-					(hero.getX()==dragon.getX()+1 && hero.getY()==dragon.getY()) ||	
-					(hero.getX()==dragon.getX()-1 && hero.getY()==dragon.getY()) ||
-					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()+1) ||
-					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()-1)){ 
-				
-				dragon.setIcon("M ");
-				dragon.setDead(true);
+			if((hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()) ||
+					(hero.getPosition().getX()==d1.getPosition().getX()+1 && hero.getPosition().getY()==d1.getPosition().getY()) ||	
+					(hero.getPosition().getX()==d1.getPosition().getX()-1 && hero.getPosition().getY()==d1.getPosition().getY()) ||
+					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()+1) ||
+					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()-1)){ 
+
+				d1.setIcon("M ");
+				d1.setDead(true);
 				System.out.println("You killed the Dragon Senas.");
 			}
 		}
 	}
+<<<<<<< HEAD
+	public void dragonKillsHero(Dragon d1){
+		if (!d1.isSleeping() && !d1.isDead()){
+			if((hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()) ||
+					(hero.getPosition().getX()==d1.getPosition().getX()+1 && hero.getPosition().getY()==d1.getPosition().getY()) ||	
+					(hero.getPosition().getX()==d1.getPosition().getX()-1 && hero.getPosition().getY()==d1.getPosition().getY()) ||
+					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()+1) ||
+					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()-1)){
+=======
 	public void dragonKillsHero(){
 		if (!dragon.isSleeping() && !dragon.isDead()){
 			if((hero.getX()==dragon.getX() && hero.getY()==dragon.getY()) ||
@@ -209,6 +255,7 @@ public class Labyrinth {
 					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()+1) ||
 					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()-1)){
 				hero.setDead(true);
+>>>>>>> origin/master
 				gameOver(false);
 			}
 		}
@@ -216,77 +263,87 @@ public class Labyrinth {
 	
 	
 	
-	public void moveDragon(){
-		if(!dragon.isSleeping()){
+	public void moveDragon(Dragon d1){
+		if(!d1.isSleeping()){
 			Random direction = new Random();
 			int pos = direction.nextInt(4);
 
 			switch (pos){
 			case 0:
-				if(labyrinth[dragon.getY()-1][dragon.getX()] != "X "){
+				if(labyrinth[d1.getPosition().getY()-1][d1.getPosition().getX()] != "X "){
 					//opcao 1
 					//impedir o dragao de se mexer para a mesma posição do dragão
 					//codigo torna-se menos legivel
-					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
-						move_up(dragon);
+						move_up(d1);
 				}
 				else
-					moveDragon();
+					moveDragon(d1);
 				break; 
 			case 1:
-				if(labyrinth[dragon.getY()+1][dragon.getX()] != "X "){
-					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+				if(labyrinth[d1.getPosition().getY()+1][d1.getPosition().getX()] != "X "){
+					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
-						move_down(dragon);
+						move_down(d1);
 				}
 				else
-					moveDragon();
+					moveDragon(d1);
 				break;
 			case 2:
-				if(labyrinth[dragon.getY()][dragon.getX()-1] != "X "){
-					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+				if(labyrinth[d1.getPosition().getY()][d1.getPosition().getX()-1] != "X "){
+					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
-						move_left(dragon);
+						move_left(d1);
 				}
 				else
-					moveDragon();
+					moveDragon(d1);
 				break;
 			case 3:
-				if(labyrinth[dragon.getY()][dragon.getX()+1] != "X "){
-					if (positionHasHero(dragon.getX(),dragon.getY()-1))
+				if(labyrinth[d1.getPosition().getY()][d1.getPosition().getX()+1] != "X "){
+					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
-						move_right(dragon);
+						move_right(d1);
 				}
 				else
-					moveDragon();
+					moveDragon(d1);
 				break;
 			case 4:
 				break;	
 			}
 		}
-		if (position_has_sword(dragon.getX(),dragon.getY()))
+		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()))
 			sword.setIcon("F ");
 		else
 			sword.setIcon("E ");
 		
-		if (positionHasDeadDragon(dragon.getX(),dragon.getY())){
+		if (positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()) != null){
 			//a rever quando forem criados mais dragões
-			dragon.setIcon(dragon.getIcon().substring(0,1) + dragon.getIcon().substring(0,1));
+			d1.setIcon(d1.getIcon().substring(0,1) + 
+					positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()).getIcon().substring(0,1));
 		}
 		else
-			dragon.setIcon(dragon.getIcon().substring(0,1) + " ");
+			d1.setIcon(d1.getIcon().substring(0,1) + " ");
 	}
 
 	public void print_labyrinth(){
 		//coloca o heroi e a espada no labirinto
+<<<<<<< HEAD
+		for (int i=0;i<dragons.size();i++){
+			this.labyrinth[dragons.get(i).getPosition().getY()][dragons.get(i).getPosition().getX()] = dragons.get(i).getIcon();
+		}
+		//this.labyrinth[dragon.getPosition().getY()][dragon.getPosition().getX()] = dragon.getIcon();
+		this.labyrinth[hero.getPosition().getY()][hero.getPosition().getX()] = hero.getIcon();
+		this.labyrinth[sword.getPosition().getY()][sword.getPosition().getX()] = sword.getIcon();
+=======
 		this.labyrinth[dragon.getY()][dragon.getX()] = dragon.getIcon();
 		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
 		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
+>>>>>>> origin/master
 		//imprime o labirinto
 		for(int i=0;i<labyrinth[0].length;i++){
 			for(int j=0;j<labyrinth[1].length;j++){
@@ -318,5 +375,10 @@ public class Labyrinth {
 			
 		//System.exit(0);
 	}
+	
+	public void addDragon(Dragon d1){
+		dragons.add(d1);
+	}
 
+	
 }

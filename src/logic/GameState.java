@@ -2,6 +2,8 @@ package logic;
 
 import java.util.Random;
 
+import logic.Item.Position;
+
 public class GameState {
 	
 	private Labyrinth labyrinth = new Labyrinth();
@@ -47,8 +49,8 @@ public class GameState {
 		MazeBuilder m1 = new MazeBuilder();
 		labyrinth.setLabyrinth(m1.buildMaze(size));
 		generateExit();
+		generateDragons();
 		generateHero();
-		//generateDragon();
 		generateSword();
 	}
 	
@@ -104,14 +106,27 @@ public class GameState {
 		}
 	}
 	
+	public void generateDragons(){
+		Random r = new Random();
+		for (int i=0;i<labyrinth.getDragons().size();i++){
+			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			if (labyrinth.getLabyrinth()[x][y] == "  "){
+				labyrinth.getDragons().get(i).getPosition().setX(x);
+				labyrinth.getDragons().get(i).getPosition().setY(y);
+				break;
+			}
+		}
+	}
+	
 	public void generateHero(){
 		Random r = new Random();
 		while (true){
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-			if (labyrinth.getLabyrinth()[x][y] == "  "){
-				labyrinth.getHero().setX(x);
-				labyrinth.getHero().setY(y);
+			Position temp = new Position(x, y);
+			if (!adjacentDragons(temp)){
+				labyrinth.getHero().setPosition(temp);
 				break;
 			}
 		}
@@ -123,13 +138,27 @@ public class GameState {
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			if (labyrinth.getLabyrinth()[x][y] == "  "){
-				labyrinth.getSword().setX(x);
-				labyrinth.getSword().setY(y);
+				labyrinth.getSword().getPosition().setX(x);
+				labyrinth.getSword().getPosition().setY(y);
 				break;
 			}
 		}
 		
 	}
+	
+	public boolean adjacentDragons(Position p1){
+		for (int i=0;i<labyrinth.getDragons().size();i++){
+			for (int posX=-2;posX<3;posX++){
+				for (int posY=-2;posY<3;posY++){
+					Position temp = new Position(p1.getX()+posX, p1.getY()+posY);
+					if (labyrinth.getDragons().get(i).getPosition().equals(temp))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public void saveGame(){
 		//a fazer
 	}

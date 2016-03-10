@@ -1,13 +1,15 @@
 package logic;
 
+import logic.Item.Position;
+
 public class Hero extends Item{
 
 	private boolean armedSword;
 	private boolean isDead;	
 	
 	public Hero(){
-		this.setX(1);
-		this.setY(1);
+		Position p1 = new Position(1, 1);
+		this.setPosition(p1);
 		this.setIcon("H ");
 		this.armedSword = false;
 		this.isDead = false;

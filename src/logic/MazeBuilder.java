@@ -16,7 +16,7 @@ public class MazeBuilder {
 			return y;
 		}
 		
-		public Position(int y, int x) {
+		public Position(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
@@ -63,10 +63,10 @@ public class MazeBuilder {
 			xIni = jaPercorrido.lastElement().getX();
 			yIni = jaPercorrido.lastElement().getY();
 			while (true){
-				boolean esq = true, dir = true, cima = true, baixo = true, semSaida = false;
-				int direccao = r.nextInt(4);
-				switch(direccao){
-				case 0://movimenta para baixo
+				boolean left = true, right = true, up = true, down = true, semSaida = false;
+				int righteccao = r.nextInt(4);
+				switch(righteccao){
+				case 0://movimenta para down
 					if(xIni+1 < arrayPositions[0].length){
 						if(arrayPositions[xIni+1][yIni] == ". "){
 							Position temp = new Position(xIni+1,yIni);
@@ -77,7 +77,7 @@ public class MazeBuilder {
 						}
 					}
 					break;
-				case 1://movimenta para cima
+				case 1://movimenta para up
 					if(xIni-1 >= 0){
 						if(arrayPositions[xIni-1][yIni] == ". "){
 							Position temp = new Position(xIni-1,yIni);
@@ -88,7 +88,7 @@ public class MazeBuilder {
 						}
 					}
 					break;
-				case 2://movimenta para a direita
+				case 2://movimenta para a righteita
 					if(yIni+1 < arrayPositions[0].length){
 						if(arrayPositions[xIni][yIni+1] == ". "){
 							Position temp = new Position(xIni,yIni+1);
@@ -99,7 +99,7 @@ public class MazeBuilder {
 						}
 					}
 					break;
-				case 3://movimenta para a esquerda
+				case 3://movimenta para a leftuerda
 					if(yIni-1 >= 0){
 						if(arrayPositions[xIni][yIni-1] == ". "){
 							Position temp = new Position(xIni,yIni-1);
@@ -111,8 +111,10 @@ public class MazeBuilder {
 					}
 					break;
 				}
-				//descomentar para verificar conteúdo do arrayPositions
-				/*for (int i=0;i<arrayPositions[0].length;i++){
+				/* descomentar para verificar progressão do arrayPositions
+				System.out.println("XIni: " + xIni);
+				System.out.println("YIni: " + yIni);
+				for (int i=0;i<arrayPositions[0].length;i++){
 						for(int k=0;k<arrayPositions[1].length;k++){
 							System.out.print(arrayPositions[i][k]);
 						}
@@ -121,32 +123,33 @@ public class MazeBuilder {
 					System.out.println("");*/
 				if ((xIni+1)<arrayPositions[0].length){
 					if (arrayPositions[xIni+1][yIni] == ". "){
-						dir = false;
+						right = false;
 					}
 				}
 
 				if ((xIni-1)>=0){
 					if (arrayPositions[xIni-1][yIni] == ". "){
-						esq = false;
+						left = false;
 					}
 				}
 
 				if ((yIni+1)<arrayPositions[0].length){
 					if (arrayPositions[xIni][yIni+1] == ". "){
-						baixo = false;
+						down = false;
 					}	
 				}
 
 				if ((yIni-1)>=0){
 					if (arrayPositions[xIni][yIni-1] == ". "){
-						cima = false;
+						up = false;
 					}
 				}
 
-				if (cima==true && baixo==true && esq==true && dir==true)
+				if (up==true && down==true && left==true && right==true)
 					semSaida = true;
 
 				if (verifyFinished(arrayPositions)){
+					improveLabyrinth(labyrinth);
 					return labyrinth;
 				}
 
@@ -168,5 +171,42 @@ public class MazeBuilder {
 		}
 		return true;
 	}
-
+	
+	//torna o labirinto mais "labirintico"
+	public void improveLabyrinth(String[][] labyrinth){
+		int size = labyrinth[0].length;
+		Random r = new Random();
+		//formula escolhida para calculo de paredes a remover: n^2/(4*n)
+		double openings = Math.pow(size,2)/(4*size);
+		while (openings > 1){
+			int x = r.nextInt(size-4)+2;
+			int y = r.nextInt(size-4)+2;
+			
+			if (labyrinth[x][y] == "X "){
+				if (adjacentWalls(labyrinth,x,y)){
+					// descomentar para verificar paredes retiradas
+					/*System.out.println("X retirado: " + x);
+					System.out.println("Y retirado: " + y);*/
+					labyrinth[x][y] = "  ";
+					openings--;
+				}
+			}
+			
+		}
+	}
+	
+	public boolean adjacentWalls(String[][]labyrinth, int x, int y){
+		if (labyrinth[x+1][y] == "X " && labyrinth[x+2][y] == "X " &&
+				labyrinth[x-1][y] == "X " && labyrinth[x-2][y] == "X " && 
+				labyrinth[x][y+1] != "X " && labyrinth[x][y-1] != "X "){
+			return true;
+		}
+		if (labyrinth[x][y+1] == "X " && labyrinth[x][y+2] == "X " &&
+				labyrinth[x][y-1] == "X " && labyrinth[x][y-2] == "X " &&
+				labyrinth[x+1][y] != "X " && labyrinth[x-1][y] != "X "){
+			return true;
+		}
+		return false;
+		
+	}
 }

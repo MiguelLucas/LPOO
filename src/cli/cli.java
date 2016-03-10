@@ -1,14 +1,16 @@
 package cli;
 
 import java.util.InputMismatchException;
+import java.util.Random;
 import java.util.Scanner;
 
+import logic.Dragon;
 import logic.GameState;
 import logic.Labyrinth;
 
 public class cli {
-	//adicionar o parametro DragonType? 
 	public static void launchGame(GameState game){
+		generateDragons(game);
 		game.getLabyrinth().print_labyrinth();
 		while (true){
 			game.getLabyrinth().move_hero();
@@ -16,19 +18,22 @@ public class cli {
 			//heroi matar dragao antes E depois deste se mover
 			//muito mais fácil e legível, mas talvez menos eficiente?
 			//game.getLabyrinth().heroKillsDragon();
-			if(!game.getLabyrinth().getDragon().isDead()){
-				if(game.isSettingMove()){
-					game.getLabyrinth().moveDragon();
-				}
-				game.getLabyrinth().heroKillsDragon();
-				game.getLabyrinth().dragonKillsHero();
+			for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+				if(!game.getLabyrinth().getDragons().get(i).isDead()){
+					if(game.isSettingMove()){
+
+						game.getLabyrinth().moveDragon(game.getLabyrinth().getDragons().get(i));
+					}
+				game.getLabyrinth().heroKillsDragon(game.getLabyrinth().getDragons().get(i));
+				game.getLabyrinth().dragonKillsHero(game.getLabyrinth().getDragons().get(i));
 				if(game.isSettingSleep()){
-					game.getLabyrinth().getDragon().goToSleep(game.getSleepRate());
+					game.getLabyrinth().getDragons().get(i).goToSleep(game.getSleepRate());
 				}
 			}
-			game.getLabyrinth().print_labyrinth();
 		}
+		game.getLabyrinth().print_labyrinth();
 	}
+}
 
 	public static void MenuGenerator(GameState game){
 		System.out.println("Welcome to the Senas Kingdom");
@@ -176,10 +181,39 @@ public class cli {
 			menuSettings(game);
 		}
 	}
+	
+	public static void generateDragons(GameState game){
+		int size = game.getLabyrinth().getLabyrinth()[0].length;
+		double maxDragons = Math.pow((size-1)/2,2);
+		int nDragons = 0;
+		System.out.println("Choose the number of dragons");
+		while (nDragons < 1 || nDragons > maxDragons){
+			try {
+				Scanner sc = new Scanner(System.in);
+				nDragons = sc.nextInt();
+				if (nDragons < 1 || nDragons > maxDragons)
+					System.out.println("Choose a number between 1 and " + maxDragons + "!");
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid value!");
+			} 
+		}
+		for (int i=0;i<nDragons;i++){
+			Dragon d1 = new Dragon();
+			int x = 0, y = 0;
+			Random r = new Random();
+			while (game.getLabyrinth().getLabyrinth()[y][x] != "  "){
+				x = r.nextInt(size-1)+1;
+				y = r.nextInt(size-1)+1;
+			}
+			d1.getPosition().setX(x);
+			d1.getPosition().setY(y);
+			game.getLabyrinth().addDragon(d1);
+		}
+	}
 
 	public static void main(String[] args) {
 		GameState newGame = new GameState();
 		MenuGenerator(newGame); 
-
+		
 	}
 }
