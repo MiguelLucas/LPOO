@@ -3,24 +3,9 @@ package logic;
 import java.util.Random;
 import java.util.Stack;
 
-public class MazeBuilder {
+import logic.Item.Position;
 
-	public static class Position {		
-		private int x, y;
-		
-		public int getX() {
-			return x;
-		}
-		
-		public int getY() {
-			return y;
-		}
-		
-		public Position(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
+public class MazeBuilder {
 	
 	public MazeBuilder() {}
 	
@@ -175,9 +160,11 @@ public class MazeBuilder {
 	//torna o labirinto mais "labirintico"
 	public void improveLabyrinth(String[][] labyrinth){
 		int size = labyrinth[0].length;
+		if (size < 10)	//se o tamanho do labirinto for muito pequeno, é possível que esta função falhe, daí ter esta condição de prevenção
+			return;
 		Random r = new Random();
-		//formula escolhida para calculo de paredes a remover: n^2/(4*n)
-		double openings = Math.pow(size,2)/(4*size);
+		//formula escolhida para calculo de paredes a remover: n/5
+		int openings = size/5;
 		while (openings > 1){
 			int x = r.nextInt(size-4)+2;
 			int y = r.nextInt(size-4)+2;

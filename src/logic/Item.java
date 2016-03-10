@@ -30,6 +30,14 @@ public class Item {
 			this.x = x;
 			this.y = y;
 		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Position)			
+				return (this.getX() == ((Position)obj).x && this.getY() == ((Position)obj).y);
+			else
+				return false;
+		}
 	}
 
 	public String getIcon() {
@@ -48,11 +56,5 @@ public class Item {
 		this.position = position;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Position)			
-			return this.getPosition().getX() == ((Position)obj).x && this.getPosition().getY() == ((Position)obj).y;
-		else
-			return false;
-	}
+	
 }

@@ -7,12 +7,13 @@ import java.util.Scanner;
 import logic.Dragon;
 import logic.GameState;
 import logic.Labyrinth;
+import logic.Item.Position;
 
 public class cli {
 	public static void launchGame(GameState game){
 		generateDragons(game);
 		game.getLabyrinth().print_labyrinth();
-		while (true){
+		while (!game.getLabyrinth().isEndGame()){
 			game.getLabyrinth().move_hero();
 			//opcao 2
 			//heroi matar dragao antes E depois deste se mover
@@ -24,16 +25,19 @@ public class cli {
 
 						game.getLabyrinth().moveDragon(game.getLabyrinth().getDragons().get(i));
 					}
-				game.getLabyrinth().heroKillsDragon(game.getLabyrinth().getDragons().get(i));
-				game.getLabyrinth().dragonKillsHero(game.getLabyrinth().getDragons().get(i));
-				if(game.isSettingSleep()){
-					game.getLabyrinth().getDragons().get(i).goToSleep(game.getSleepRate());
+					game.getLabyrinth().heroKillsDragon(game.getLabyrinth().getDragons().get(i));
+					game.getLabyrinth().dragonKillsHero(game.getLabyrinth().getDragons().get(i));
+					if(game.isSettingSleep()){
+						game.getLabyrinth().getDragons().get(i).goToSleep(game.getSleepRate());
+					}
 				}
 			}
+			game.getLabyrinth().print_labyrinth();
 		}
-		game.getLabyrinth().print_labyrinth();
+		
+		GameState newGame = new GameState();
+		MenuGenerator(newGame); 
 	}
-}
 
 	public static void MenuGenerator(GameState game){
 		System.out.println("Welcome to the Senas Kingdom");

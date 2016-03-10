@@ -11,6 +11,7 @@ public class Labyrinth {
 	public Labyrinth() {}
 	
 	public Labyrinth(String[][] labyrinth) { this.labyrinth = labyrinth;}
+	private boolean endGame = false;
 	
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
@@ -54,6 +55,15 @@ public class Labyrinth {
 	public void setDragons(ArrayList<Dragon> dragons) {
 		this.dragons = dragons;
 	}
+	
+	public boolean isEndGame() {
+		return endGame;
+	}
+
+	public void setEndGame(boolean endGame) {
+		this.endGame = endGame;
+	}
+	
 	public void move_hero(){
 		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
 		Scanner sc = new Scanner(System.in);
@@ -238,7 +248,6 @@ public class Labyrinth {
 			}
 		}
 	}
-<<<<<<< HEAD
 	public void dragonKillsHero(Dragon d1){
 		if (!d1.isSleeping() && !d1.isDead()){
 			if((hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()) ||
@@ -246,16 +255,7 @@ public class Labyrinth {
 					(hero.getPosition().getX()==d1.getPosition().getX()-1 && hero.getPosition().getY()==d1.getPosition().getY()) ||
 					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()+1) ||
 					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()-1)){
-=======
-	public void dragonKillsHero(){
-		if (!dragon.isSleeping() && !dragon.isDead()){
-			if((hero.getX()==dragon.getX() && hero.getY()==dragon.getY()) ||
-					(hero.getX()==dragon.getX()+1 && hero.getY()==dragon.getY()) ||	
-					(hero.getX()==dragon.getX()-1 && hero.getY()==dragon.getY()) ||
-					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()+1) ||
-					(hero.getX()==dragon.getX() && hero.getY()==dragon.getY()-1)){
 				hero.setDead(true);
->>>>>>> origin/master
 				gameOver(false);
 			}
 		}
@@ -332,18 +332,13 @@ public class Labyrinth {
 
 	public void print_labyrinth(){
 		//coloca o heroi e a espada no labirinto
-<<<<<<< HEAD
 		for (int i=0;i<dragons.size();i++){
 			this.labyrinth[dragons.get(i).getPosition().getY()][dragons.get(i).getPosition().getX()] = dragons.get(i).getIcon();
 		}
 		//this.labyrinth[dragon.getPosition().getY()][dragon.getPosition().getX()] = dragon.getIcon();
 		this.labyrinth[hero.getPosition().getY()][hero.getPosition().getX()] = hero.getIcon();
 		this.labyrinth[sword.getPosition().getY()][sword.getPosition().getX()] = sword.getIcon();
-=======
-		this.labyrinth[dragon.getY()][dragon.getX()] = dragon.getIcon();
-		this.labyrinth[hero.getY()][hero.getX()] = hero.getIcon();
 		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
->>>>>>> origin/master
 		//imprime o labirinto
 		for(int i=0;i<labyrinth[0].length;i++){
 			for(int j=0;j<labyrinth[1].length;j++){
@@ -373,7 +368,7 @@ public class Labyrinth {
 		else
 			System.out.println("YOU DIED\nYou were eaten by Dragon Senas.");
 			
-		//System.exit(0);
+		endGame = true;
 	}
 	
 	public void addDragon(Dragon d1){

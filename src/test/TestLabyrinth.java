@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import logic.*;
 
-<<<<<<< HEAD
 public class TestLabyrinth{
 		
 		private String [][] labyrinthtest = {{"X ","S ","X ","X ","X "},
@@ -17,7 +16,6 @@ public class TestLabyrinth{
 
 		//a) move-se para celula vazia 
 		/*@Test
-=======
 public class TestLabyrinth {
 		
 		private String [][] labyrinthtest = {{"X ","S ","X ","X ","X "},
@@ -40,17 +38,15 @@ public class TestLabyrinth {
 			{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
 			{"X ","E ","X ","X ","  ","  ","  ","  ","  ","X "},
 			{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "}};
-		*/
+		
 		
 		@Test
->>>>>>> origin/master
 		public void testMoveHeroToFreeCell() {
 			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
 			labyrinth.move_down(labyrinth.getHero());
 			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
 		}
 		
-<<<<<<< HEAD
 		//b) contra as paredes
 	    @Test
 		public void testRetardedHero() {
@@ -120,16 +116,15 @@ public class TestLabyrinth {
 	  			assertTrue(!labyrinth.getDragon().isDead());
 	  			labyrinth.move_up(labyrinth.getHero());
 	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	  		}*/
+	  		}
 	   
-=======
-	/*	@Test
+		@Test
 		public void testRetardedHero() {
 			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
 			labyrinth.move_left(labyrinth.getHero());
 			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[0][1]);
 		}
-		*/
+		
 		
 		@Test
 		public void testHeroDies() {
@@ -141,7 +136,7 @@ public class TestLabyrinth {
 			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
 			assertTrue(labyrinth.getHero().isDead());
 		}
-		/*
+		
 			
 			assertEquals(MazeStatus.HeroUnarmed, maze.getStatus());
 			maze.moveHeroDown();
@@ -149,5 +144,4 @@ public class TestLabyrinth {
 		fail("Not yet implemented");
 	} */
 
->>>>>>> origin/master
 }
