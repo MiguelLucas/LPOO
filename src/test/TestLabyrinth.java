@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import logic.*;
+import logic.Item.Position;
 
 public class TestLabyrinth{
 		
@@ -15,55 +16,32 @@ public class TestLabyrinth{
 		private Labyrinth labyrinth = new Labyrinth(labyrinthtest);
 
 		//a) move-se para celula vazia 
-		/*@Test
-public class TestLabyrinth {
-		
-		private String [][] labyrinthtest = {{"X ","S ","X ","X ","X "},
-					 	  					 {"X ","H ","E "," "," "},
-					 	  					 {"X "," ","X "," ","X "},
-					 	  					 {"X ","D "," "," ","X "},
-					 	  					 {"X ","X ","X ","X ","X "}};
-		private Labyrinth labyrinth = new Labyrinth(labyrinthtest);
-		
-		
-		
-		/*private String[][] labyrinth = 
-			{{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "},
-			{"X ","H ","  ","  ","  ","  ","  ","  ","  ","X "},
-			{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
-			{"X ","D ","X ","X ","  ","X ","  ","X ","  ","X "},
-			{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
-			{"X ","  ","  ","  ","  ","  ","  ","X ","  ","S "},
-			{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
-			{"X ","  ","X ","X ","  ","X ","  ","X ","  ","X "},
-			{"X ","E ","X ","X ","  ","  ","  ","  ","  ","X "},
-			{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "}};
-		
-		
 		@Test
 		public void testMoveHeroToFreeCell() {
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
+			Position p1 = new Position(1, 1);
+			assertEquals(labyrinth.getHero().getPosition(), p1);
 			labyrinth.move_down(labyrinth.getHero());
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
+			Position p2 = new Position(1, 2);
+			assertEquals(labyrinth.getHero().getPosition(), p2);
 		}
 		
 		//b) contra as paredes
 	    @Test
 		public void testRetardedHero() {
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
+	    	Position p1 = new Position(1, 1);
+			assertEquals(labyrinth.getHero().getPosition(), p1);
 			labyrinth.move_left(labyrinth.getHero());
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
+			assertEquals(labyrinth.getHero().getPosition(), p1);
 		}
 		
 	    //c) verifica se apanha a espada 
 	    @Test
 		public void testCatchesSword() {
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
 			labyrinth.move_right(labyrinth.getHero());
 			labyrinth.hero_catches_sword();
 			assertTrue(labyrinth.getHero().isArmedSword());
 		}
-		
+		/*
 //	    //d) nao da mas vai dar
 //	    @Test
 //		public void testHeroDies() {
