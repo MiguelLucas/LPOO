@@ -4,6 +4,8 @@ import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.xml.ws.handler.MessageContext;
+
 import logic.Dragon;
 import logic.GameState;
 import logic.Labyrinth;
@@ -12,9 +14,11 @@ import logic.Item.Position;
 public class cli {
 	public static void launchGame(GameState game){
 		generateDragons(game);
-		game.getLabyrinth().print_labyrinth();
-		while (!game.getLabyrinth().isEndGame()){
-			game.getLabyrinth().move_hero();
+		game.generateHero();
+		game.generateSword();
+		printLabyrinth(game);
+		while (game.getLabyrinth().getEndGame() == 0){
+			moveHeroCli(game);
 			//opcao 2
 			//heroi matar dragao antes E depois deste se mover
 			//muito mais fácil e legível, mas talvez menos eficiente?
@@ -32,9 +36,9 @@ public class cli {
 					}
 				}
 			}
-			game.getLabyrinth().print_labyrinth();
+			printLabyrinth(game);
 		}
-		
+		//printLabyrinth(game);
 		GameState newGame = new GameState();
 		MenuGenerator(newGame); 
 	}
@@ -213,8 +217,75 @@ public class cli {
 			d1.getPosition().setY(y);
 			game.getLabyrinth().addDragon(d1);
 		}
+		game.generateDragons();
 	}
 
+	public static void moveHeroCli(GameState game){
+		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
+		Scanner sc = new Scanner(System.in);
+		char move = Character.toUpperCase(sc.next().charAt(0));
+		
+		switch(move){
+		case 'W':
+			game.getLabyrinth().move_hero('W');
+			break;
+		case 'S':
+			game.getLabyrinth().move_hero('S');
+			break;
+		case 'A':
+			game.getLabyrinth().move_hero('A');
+			break;
+		case 'D':
+			game.getLabyrinth().move_hero('D');
+			break;
+		case 'E':
+			System.out.println("Goodbye :(");
+			sc.close();
+			System.exit(0);
+		default:
+			System.out.println("Invalid direction.");
+			moveHeroCli(game);
+			break;
+		}
+	}
+	public static void printLabyrinth(GameState game){
+		//coloca o heroi e a espada no labirinto
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
+		for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(i).getPosition().getY()][game.getLabyrinth().getDragons().get(i).getPosition().getX()] = game.getLabyrinth().getDragons().get(i).getIcon();
+		}
+		//this.labyrinth[dragon.getPosition().getY()][dragon.getPosition().getX()] = dragon.getIcon();
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
+		
+		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
+		//imprime o labirinto
+		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
+			}
+			System.out.println();	
+		}
+		printInventory(game);
+		printMessage(game);
+	}
+	
+	public static void printInventory(GameState game){
+		System.out.println("----------------------");
+		System.out.println("Hero's inventory: ");
+		if (game.getLabyrinth().getHero().isArmedSword())
+			System.out.println("1x Sword ");
+		else
+			System.out.println("Nothing");
+		//a acrescentar mais items conforme se vão criando
+		System.out.println("----------------------");
+	}
+	
+	public static void printMessage(GameState game){
+		System.out.println("----------------------");
+		System.out.println(game.getLabyrinth().getMessage() + "\n");
+		game.getLabyrinth().setMessage("Hero,choose your action!");
+	}
+	
 	public static void main(String[] args) {
 		GameState newGame = new GameState();
 		MenuGenerator(newGame); 

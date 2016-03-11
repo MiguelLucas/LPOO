@@ -49,9 +49,6 @@ public class GameState {
 		MazeBuilder m1 = new MazeBuilder();
 		labyrinth.setLabyrinth(m1.buildMaze(size));
 		generateExit();
-		generateDragons();
-		generateHero();
-		generateSword();
 	}
 	
 	public void generateExit(){
@@ -105,16 +102,28 @@ public class GameState {
 		}
 		}
 	}
-	
+
 	public void generateDragons(){
 		Random r = new Random();
-		for (int i=0;i<labyrinth.getDragons().size();i++){
+		int it = 0;
+		while (it < labyrinth.getDragons().size()){
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			
 			if (labyrinth.getLabyrinth()[x][y] == "  "){
-				labyrinth.getDragons().get(i).getPosition().setX(x);
-				labyrinth.getDragons().get(i).getPosition().setY(y);
-				break;
+				Position p1 = new Position(x, y);
+				boolean jaExiste = false;
+				for (int j=0;j<labyrinth.getDragons().size();j++){
+					if(labyrinth.getDragons().get(j).getPosition().equals(p1)){
+						jaExiste = true;
+					}
+				}
+				if (!jaExiste){
+					System.out.println("N " + it);
+					System.out.println(p1.toString());
+					labyrinth.getDragons().get(it).setPosition(p1);
+					it++;
+				}
 			}
 		}
 	}
@@ -143,13 +152,12 @@ public class GameState {
 				break;
 			}
 		}
-		
 	}
 	
 	public boolean adjacentDragons(Position p1){
 		for (int i=0;i<labyrinth.getDragons().size();i++){
-			for (int posX=-2;posX<3;posX++){
-				for (int posY=-2;posY<3;posY++){
+			for (int posX=-1;posX<2;posX++){
+				for (int posY=-1;posY<2;posY++){
 					Position temp = new Position(p1.getX()+posX, p1.getY()+posY);
 					if (labyrinth.getDragons().get(i).getPosition().equals(temp))
 						return true;

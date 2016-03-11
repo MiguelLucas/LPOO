@@ -38,6 +38,11 @@ public class Item {
 			else
 				return false;
 		}
+		
+		 @Override
+		 public String toString() {
+			 return "X: " + x + "\nY: " + y;
+		 }
 	}
 
 	public String getIcon() {

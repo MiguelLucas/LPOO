@@ -11,11 +11,15 @@ public class Labyrinth {
 	public Labyrinth() {}
 	
 	public Labyrinth(String[][] labyrinth) { this.labyrinth = labyrinth;}
-	private boolean endGame = false;
+	
+	//0 - nao acabou, 1 - ganhou jogo, -1 - perdeu jogo
+	private int endGame = 0;
 	
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
 	private ArrayList<Dragon> dragons = new ArrayList<Dragon>(); 
+	
+	private String message = "Hero,choose your action!";
 	
 	
 	private String[][] labyrinth = 
@@ -56,20 +60,25 @@ public class Labyrinth {
 		this.dragons = dragons;
 	}
 	
-	public boolean isEndGame() {
+	public int getEndGame() {
 		return endGame;
 	}
 
-	public void setEndGame(boolean endGame) {
+	public void setEndGame(int endGame) {
 		this.endGame = endGame;
 	}
 	
-	public void move_hero(){
-		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
-		Scanner sc = new Scanner(System.in);
-		char move = Character.toUpperCase(sc.next().charAt(0));
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void move_hero(char direction){
 		
-		switch(move){
+		switch(direction){
 		case 'W':
 			move_up(hero);
 			break;
@@ -81,14 +90,6 @@ public class Labyrinth {
 			break;
 		case 'D':
 			move_right(hero);
-			break;
-		case 'E':
-			System.out.println("Goodbye :(");
-			sc.close();
-			System.exit(0);
-		default:
-			System.out.println("Invalid direction.");
-			move_hero();
 			break;
 		}
 		if (position_has_sword(hero.getPosition().getX(),hero.getPosition().getY()))
@@ -107,8 +108,8 @@ public class Labyrinth {
 	}
 	
 	public boolean validPosition(int x, int y){
-		if (labyrinth[y][x] == "  " || position_has_sword(x,y) 
-				|| positionHasDeadDragon(x,y) != null && !positionHasHero(x,y)){
+		if ((labyrinth[y][x] == "  " || position_has_sword(x,y) 
+				|| positionHasDeadDragon(x,y) != null) && !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -128,10 +129,15 @@ public class Labyrinth {
 					break;
 				}	
 			}
-			if (allDead && labyrinth[i1.getPosition().getY()-1][i1.getPosition().getX()] == "S "){
-				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
-				i1.getPosition().setX(i1.getPosition().getY()-1);
-				gameOver(true);
+			if (labyrinth[i1.getPosition().getY()-1][i1.getPosition().getX()] == "S "){
+				if (allDead){
+					labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+					i1.getPosition().setY(i1.getPosition().getY()-1);
+					gameOver(true);
+				}
+				else {
+					message = "Hero, you can't escape without eliminating all the remaining Dragons!";
+				}
 			}
 		}
 	}
@@ -149,10 +155,15 @@ public class Labyrinth {
 					break;
 				}	
 			}
-			if (allDead && labyrinth[i1.getPosition().getY()+1][i1.getPosition().getX()] == "S "){
-				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
-				i1.getPosition().setX(i1.getPosition().getY()+1);
-				gameOver(true);
+			if (labyrinth[i1.getPosition().getY()+1][i1.getPosition().getX()] == "S "){
+				if (allDead){
+					labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+					i1.getPosition().setY(i1.getPosition().getY()+1);
+					gameOver(true);
+				}
+				else {
+					message = "Hero, you can't escape without eliminating all the remaining Dragons!";
+				}
 			}
 		}
 	}
@@ -170,10 +181,15 @@ public class Labyrinth {
 					break;
 				}	
 			}
-			if (allDead && labyrinth[i1.getPosition().getY()][i1.getPosition().getX()-1] == "S "){
-				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
-				i1.getPosition().setX(i1.getPosition().getX()-1);
-				gameOver(true);
+			if (labyrinth[i1.getPosition().getY()][i1.getPosition().getX()-1] == "S "){
+				if (allDead){
+					labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+					i1.getPosition().setX(i1.getPosition().getX()-1);
+					gameOver(true);
+				}
+				else {
+					message = "Hero, you can't escape without eliminating all the remaining Dragons!";
+				}
 			}
 		}	
 	}
@@ -191,10 +207,15 @@ public class Labyrinth {
 					break;
 				}	
 			}
-			if (allDead && labyrinth[i1.getPosition().getY()][i1.getPosition().getX()+1] == "S "){
-				labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
-				i1.getPosition().setX(i1.getPosition().getX()+1);
-				gameOver(true);
+			if (labyrinth[i1.getPosition().getY()][i1.getPosition().getX()+1] == "S "){
+				if (allDead){
+					labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
+					i1.getPosition().setX(i1.getPosition().getX()+1);
+					gameOver(true);
+				}
+				else {
+					message = "Hero, you can't escape without eliminating all the remaining Dragons!";
+				}
 			}
 		}
 	}
@@ -225,12 +246,14 @@ public class Labyrinth {
 			return false;
 	}
 	public void hero_catches_sword(){
-		hero.setIcon("A ");
-		hero.setArmedSword(true);
-		sword.setIcon("X ");
-		sword.getPosition().setX(0);
-		sword.getPosition().setY(0);
-		System.out.println("You picked up the Sword!");
+		if (hero.getPosition().equals(sword.getPosition()) && !hero.isArmedSword()){
+			hero.setIcon("A ");
+			hero.setArmedSword(true);
+			sword.setIcon("X ");
+			sword.getPosition().setX(0);
+			sword.getPosition().setY(0);
+			message = "YOU PICKED UP THE SWORD!";
+		}
 	}
 	
 	
@@ -244,7 +267,7 @@ public class Labyrinth {
 
 				d1.setIcon("M ");
 				d1.setDead(true);
-				System.out.println("You killed the Dragon Senas.");
+				message = "YOU KILLED A DRAGON! This dungeon is a bit more secure now.";
 			}
 		}
 	}
@@ -261,16 +284,14 @@ public class Labyrinth {
 		}
 	}
 	
-	
-	
 	public void moveDragon(Dragon d1){
 		if(!d1.isSleeping()){
 			Random direction = new Random();
-			int pos = direction.nextInt(4);
+			int pos = direction.nextInt(5);
 
 			switch (pos){
 			case 0:
-				if(labyrinth[d1.getPosition().getY()-1][d1.getPosition().getX()] != "X "){
+				if(validPosition(d1.getPosition().getY()-1,d1.getPosition().getX())){
 					//opcao 1
 					//impedir o dragao de se mexer para a mesma posição do dragão
 					//codigo torna-se menos legivel
@@ -283,7 +304,7 @@ public class Labyrinth {
 					moveDragon(d1);
 				break; 
 			case 1:
-				if(labyrinth[d1.getPosition().getY()+1][d1.getPosition().getX()] != "X "){
+				if(validPosition(d1.getPosition().getY()+1,d1.getPosition().getX())){
 					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
@@ -293,7 +314,7 @@ public class Labyrinth {
 					moveDragon(d1);
 				break;
 			case 2:
-				if(labyrinth[d1.getPosition().getY()][d1.getPosition().getX()-1] != "X "){
+				if(validPosition(d1.getPosition().getY(),d1.getPosition().getX()-1)){
 					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
@@ -303,7 +324,7 @@ public class Labyrinth {
 					moveDragon(d1);
 				break;
 			case 3:
-				if(labyrinth[d1.getPosition().getY()][d1.getPosition().getX()+1] != "X "){
+				if(validPosition(d1.getPosition().getY(),d1.getPosition().getX()+1)){
 					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else
@@ -317,9 +338,16 @@ public class Labyrinth {
 			}
 		}
 		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()))
-			sword.setIcon("F ");
-		else
-			sword.setIcon("E ");
+			d1.setIcon("F ");
+		else{
+			if (d1.isSleeping())
+				d1.setIcon("d ");
+			else {
+				d1.setIcon("D ");
+			}
+		}
+			
+			
 		
 		if (positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()) != null){
 			//a rever quando forem criados mais dragões
@@ -329,46 +357,16 @@ public class Labyrinth {
 		else
 			d1.setIcon(d1.getIcon().substring(0,1) + " ");
 	}
-
-	public void print_labyrinth(){
-		//coloca o heroi e a espada no labirinto
-		for (int i=0;i<dragons.size();i++){
-			this.labyrinth[dragons.get(i).getPosition().getY()][dragons.get(i).getPosition().getX()] = dragons.get(i).getIcon();
-		}
-		//this.labyrinth[dragon.getPosition().getY()][dragon.getPosition().getX()] = dragon.getIcon();
-		this.labyrinth[hero.getPosition().getY()][hero.getPosition().getX()] = hero.getIcon();
-		this.labyrinth[sword.getPosition().getY()][sword.getPosition().getX()] = sword.getIcon();
-		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
-		//imprime o labirinto
-		for(int i=0;i<labyrinth[0].length;i++){
-			for(int j=0;j<labyrinth[1].length;j++){
-				System.out.print(this.getLabyrinth()[i][j]);
-			}
-			System.out.println();	
-		}
-		print_inventory();
-	}
-	
-	public void print_inventory(){
-		System.out.println("----------------------");
-		System.out.println("Hero's inventory: ");
-		if (hero.isArmedSword())
-			System.out.println("1x Sword ");
-		else
-			System.out.println("Nothing");
-		//a acrescentar mais items conforme se vão criando
-		System.out.println("----------------------");
-	}
 	
 	public void gameOver(boolean win){
-		print_labyrinth();
 		if (win){
-			System.out.println("You're winner!");
+			endGame = 1;
+			message = "Congratulations! You have beaten the mighty dragons and escaped the evil of this labyrinth!\nYou deserve the title of HERO!";
 		}
-		else
-			System.out.println("YOU DIED\nYou were eaten by Dragon Senas.");
-			
-		endGame = true;
+		else{
+			endGame = -1;
+			message = "YOU DIED\nYou were eaten by a Dragon Senas.";
+		}
 	}
 	
 	public void addDragon(Dragon d1){
