@@ -2,14 +2,14 @@
 
 * Fog of War (Top!)
 * Spear
-* Enhanced random generation (multiple paths)
+* ~~Enhanced random generation (multiple paths)~~
 * Full feature customization
 * Power ups
 
 ##Medium-Priority
 
 * Campaign Mode (with story?)
-* Sledgehammers
+* ~~Sledgehammers~~
 * Different shields
 * Traps
 
