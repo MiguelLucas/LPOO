@@ -48,60 +48,9 @@ public class GameState {
 	public void generateLabyrinth(int size){
 		MazeBuilder m1 = new MazeBuilder();
 		labyrinth.setLabyrinth(m1.buildMaze(size));
-		generateExit();
 	}
 	
-	public void generateExit(){
-		Random r = new Random();
-		int direccao = r.nextInt(4);
-		int posicao = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-		switch (direccao){
-		case 0:{
-			while (true){
-				if (labyrinth.getLabyrinth()[1][posicao] != "X "){
-					labyrinth.getLabyrinth()[0][posicao] = "S ";
-					break;
-				}
-				else
-					posicao = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-			}
-			break;
-		}
-		case 1:{
-			while (true){
-				if (labyrinth.getLabyrinth()[labyrinth.getLabyrinth()[0].length-2][posicao] != "X "){
-					labyrinth.getLabyrinth()[labyrinth.getLabyrinth()[0].length-1][posicao] = "S ";
-					break;
-				}
-				else
-					posicao = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-			}
-			break;
-		}
-		case 2:{
-			while (true){
-				if (labyrinth.getLabyrinth()[posicao][1] != "X "){
-					labyrinth.getLabyrinth()[posicao][0] = "S ";
-					break;
-				}
-				else
-					posicao = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-			}
-			break;
-		}
-		case 3:{
-			while (true){
-				if (labyrinth.getLabyrinth()[posicao][labyrinth.getLabyrinth()[0].length-2] != "X "){
-					labyrinth.getLabyrinth()[posicao][labyrinth.getLabyrinth()[0].length-1] = "S ";
-					break;
-				}
-				else
-					posicao = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
-			}
-			break;
-		}
-		}
-	}
+	
 
 	public void generateDragons(){
 		Random r = new Random();
@@ -147,9 +96,19 @@ public class GameState {
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			if (labyrinth.getLabyrinth()[x][y] == "  "){
-				labyrinth.getSword().getPosition().setX(x);
-				labyrinth.getSword().getPosition().setY(y);
-				break;
+				Position p1 = new Position(x, y);
+				boolean jaExiste = false;
+				for (int j=0;j<labyrinth.getDragons().size();j++){
+					if(labyrinth.getDragons().get(j).getPosition().equals(p1)){
+						jaExiste = true;
+					}
+				}
+				if (labyrinth.getHero().getPosition().equals(p1))
+					jaExiste = true;
+				if (!jaExiste){
+					labyrinth.getSword().setPosition(p1);
+					break;
+				}
 			}
 		}
 	}

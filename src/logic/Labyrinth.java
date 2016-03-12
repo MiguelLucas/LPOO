@@ -8,9 +8,16 @@ import logic.Item.Position;
 
 public class Labyrinth {
 
-	public Labyrinth() {}
-	
-	public Labyrinth(String[][] labyrinth) { this.labyrinth = labyrinth;}
+	public Labyrinth() {
+		Dragon d1 = new Dragon();
+		addDragon(d1);
+	}
+
+	public Labyrinth(String[][] labyrinth) { 
+		Dragon d1 = new Dragon();
+		addDragon(d1);
+		this.labyrinth = labyrinth;
+	}
 	
 	//0 - nao acabou, 1 - ganhou jogo, -1 - perdeu jogo
 	private int endGame = 0;
@@ -120,6 +127,7 @@ public class Labyrinth {
 		if (validPosition(i1.getPosition().getX(),i1.getPosition().getY()-1)){
 			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
 			i1.getPosition().setY(i1.getPosition().getY()-1);
+			return;
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
 			boolean allDead = true;
@@ -146,6 +154,7 @@ public class Labyrinth {
 		if(validPosition(i1.getPosition().getX(),i1.getPosition().getY()+1)){
 			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
 			i1.getPosition().setY(i1.getPosition().getY()+1);
+			return;
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
 			boolean allDead = true;
@@ -172,6 +181,7 @@ public class Labyrinth {
 		if(validPosition(i1.getPosition().getX()-1,i1.getPosition().getY())){
 			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
 			i1.getPosition().setX(i1.getPosition().getX()-1);
+			return;
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
 			boolean allDead = true;
@@ -198,6 +208,7 @@ public class Labyrinth {
 		if(validPosition(i1.getPosition().getX()+1,i1.getPosition().getY())){
 			labyrinth[i1.getPosition().getY()][i1.getPosition().getX()] = "  ";
 			i1.getPosition().setX(i1.getPosition().getX()+1);
+			return;
 		}
 		if (i1.getClass().getName() == "logic.Hero"){
 			boolean allDead = true;
@@ -284,51 +295,60 @@ public class Labyrinth {
 		}
 	}
 	
-	public void moveDragon(Dragon d1){
+	public int moveDragon(Dragon d1){
+		int direction = -1; //-1 - same place, 0 - up, 1 - down, 2 - left, 3 - right
 		if(!d1.isSleeping()){
-			Random direction = new Random();
-			int pos = direction.nextInt(5);
+			Random r = new Random();
+			int pos = r.nextInt(5);
 
 			switch (pos){
 			case 0:
-				if(validPosition(d1.getPosition().getY()-1,d1.getPosition().getX())){
+				if(validPosition(d1.getPosition().getX(),d1.getPosition().getY()-1)){
 					//opcao 1
 					//impedir o dragao de se mexer para a mesma posição do dragão
 					//codigo torna-se menos legivel
 					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
-					else
+					else{
 						move_up(d1);
+						direction = 0;
+					}
 				}
 				else
 					moveDragon(d1);
 				break; 
 			case 1:
-				if(validPosition(d1.getPosition().getY()+1,d1.getPosition().getX())){
-					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
+				if(validPosition(d1.getPosition().getX(),d1.getPosition().getY()+1)){
+					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()+1))
 						break;
-					else
+					else{
 						move_down(d1);
+						direction = 1;
+					}
 				}
 				else
 					moveDragon(d1);
 				break;
 			case 2:
-				if(validPosition(d1.getPosition().getY(),d1.getPosition().getX()-1)){
-					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
+				if(validPosition(d1.getPosition().getX()-1,d1.getPosition().getY())){
+					if (positionHasHero(d1.getPosition().getX()-1,d1.getPosition().getY()))
 						break;
-					else
+					else{
 						move_left(d1);
+						direction = 2;
+					}
 				}
 				else
 					moveDragon(d1);
 				break;
 			case 3:
-				if(validPosition(d1.getPosition().getY(),d1.getPosition().getX()+1)){
-					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
+				if(validPosition(d1.getPosition().getX()+1,d1.getPosition().getY())){
+					if (positionHasHero(d1.getPosition().getX()+1,d1.getPosition().getY()))
 						break;
-					else
+					else{
 						move_right(d1);
+						direction = 3;
+					}
 				}
 				else
 					moveDragon(d1);
@@ -356,6 +376,8 @@ public class Labyrinth {
 		}
 		else
 			d1.setIcon(d1.getIcon().substring(0,1) + " ");
+		
+		return direction;
 	}
 	
 	public void gameOver(boolean win){

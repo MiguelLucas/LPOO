@@ -11,7 +11,7 @@ public class TestLabyrinth{
 		private String [][] labyrinthtest = {{"X ","S ","X ","X ","X "},
 					 	  					 {"X ","H ","E ","  "," "},
 					 	  					 {"X ","  ","X ","  ","X "},
-					 	  					 {"X ","D ","  ","X ","X "},
+					 	  					 {"X ","D ","  ","  ","X "},
 					 	  					 {"X ","X ","X ","X ","X "}};
 		private Labyrinth labyrinth = new Labyrinth(labyrinthtest);
 
@@ -34,92 +34,88 @@ public class TestLabyrinth{
 			assertEquals(labyrinth.getHero().getPosition(), p1);
 		}
 		
-	    //c) verifica se apanha a espada 
+//	    //c) verifica se apanha a espada 
 	    @Test
 		public void testCatchesSword() {
-			labyrinth.move_right(labyrinth.getHero());
+	    	//Position p1 = new Position(1, 1);
+	    	Position p_sword = new Position(2,1); 
+	    	labyrinth.hero_catches_sword();
+	    	labyrinth.getSword().setPosition(p_sword); 
+	    	assertTrue(!labyrinth.getHero().isArmedSword());
+	    	labyrinth.move_right(labyrinth.getHero());
 			labyrinth.hero_catches_sword();
 			assertTrue(labyrinth.getHero().isArmedSword());
 		}
-		/*
-//	    //d) nao da mas vai dar
-//	    @Test
-//		public void testHeroDies() {
-//			//labyrinth.getSword().setX(2);
-//			//labyrinth.getSword().setY(1);
-//	    	assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-//			assertTrue(!labyrinth.getHero().isArmedSword());
-//			labyrinth.move_down(labyrinth.getHero());
-//			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
-//			labyrinth.dragonKillsHero();
-//			assertTrue(labyrinth.getHero().isDead());
-//		}
-	    
-	  	    
-	    //e) heroi mata o dragao  
-	     @Test
-	  	 public void testDragonDies() {
-	    		assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	    		labyrinth.move_right(labyrinth.getHero());
-	    		labyrinth.hero_catches_sword();
-				assertTrue(labyrinth.getHero().isArmedSword());
-				labyrinth.move_left(labyrinth.getHero());
-				labyrinth.move_down(labyrinth.getHero());
-				assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
-				labyrinth.heroKillsDragon();
-				assertTrue(labyrinth.getDragon().isDead());
-	  		}
-	  		
-	  		
-//	  	//f) testar vitoria (nao da mas vai dar)   
-//	  		 @Test
-//	         public void testCatchesSword() {
-//	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-//	  			labyrinth.move_left(labyrinth.getHero());
-//	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[0][1]);
-//	  		}
-
-	  		//g) testar ir para a saida sem a espada 
-	       @Test
-	  		public void testOutwithnoSword() {
-	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	  			assertTrue(!labyrinth.getHero().isArmedSword());
-	  			labyrinth.move_up(labyrinth.getHero());
-	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	  		}
-	  	 	//h) testar vitoria sem ter morto o dragao 
-	  		@Test 
-	       public void testOutwithDragonAlive() {
-	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	  			assertTrue(!labyrinth.getDragon().isDead());
-	  			labyrinth.move_up(labyrinth.getHero());
-	  			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-	  		}
-	   
-		@Test
-		public void testRetardedHero() {
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
-			labyrinth.move_left(labyrinth.getHero());
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[0][1]);
-		}
-		
-		
-		@Test
-		public void testHeroDies() {
-			labyrinth.getSword().setX(2);
-			labyrinth.getSword().setY(1);
+//		
+	    //d) se o heroi morre 
+	    	@Test
+	    	public void testHeroDies() {
+	    	Position p_sword = new Position(1, 2);
+			labyrinth.getSword().setPosition(p_sword); 
+	    	//labyrinth.getSword().setX(2);
+			//labyrinth.getSword().setY(1);
+			Position p_lab = new Position(1, 1);
+			assertEquals(labyrinth.getHero().getPosition(), p_lab);
+			//assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[1][1]);
 			assertTrue(!labyrinth.getHero().isArmedSword());
 			labyrinth.move_down(labyrinth.getHero());
-			labyrinth.dragonKillsHero();
-			assertEquals(labyrinth.getLabyrinth()[labyrinth.getHero().getY()][labyrinth.getHero().getX()], labyrinthtest[2][1]);
+			p_lab.setY(2);			
+			assertEquals(labyrinth.getHero().getPosition(), p_lab);
+			labyrinth.dragonKillsHero(labyrinth.getDragons().get(0));
 			assertTrue(labyrinth.getHero().isDead());
-		}
-		
-			
-			assertEquals(MazeStatus.HeroUnarmed, maze.getStatus());
-			maze.moveHeroDown();
-			assertEquals(MazeStatus.HeroDied, maze.getStatus());
-		fail("Not yet implemented");
-	} */
+	    	}
+
+	    	
+//	    //e) heroi mata o dragao  
+	     @Test
+	  	 public void testDragonDies() {
+	    	    Position p_sword = new Position(2,1);
+	    	    Position p_dragon =  new Position(1,3);
+	    	    labyrinth.getSword().setPosition(p_sword);
+	    	    labyrinth.getDragons().get(0).setPosition(p_dragon);
+	    	 	labyrinth.move_right(labyrinth.getHero());
+	    	 	labyrinth.hero_catches_sword();
+				labyrinth.move_left(labyrinth.getHero());
+				labyrinth.move_down(labyrinth.getHero());
+				labyrinth.heroKillsDragon(labyrinth.getDragons().get(0));
+				assertTrue(labyrinth.getDragons().get(0).isDead());
+	  		}
+	  		
+//////////	  	//f) testar mover para a saida e passar nesse labirinto 
+	  		 @Test
+	         public void testHeroWins() {
+	  			Position p_sword = new Position(2,1);
+		    	Position p_dragon =  new Position(1,3);
+		    	labyrinth.getSword().setPosition(p_sword);
+		    	labyrinth.getDragons().get(0).setPosition(p_dragon);
+		    	labyrinth.move_right(labyrinth.getHero()); 	
+		    	labyrinth.hero_catches_sword();
+	   	    	//esta armado
+	   	    	labyrinth.move_left(labyrinth.getHero());
+	   	    	labyrinth.move_down(labyrinth.getHero());
+	   	    	labyrinth.move_down(labyrinth.getHero());
+	   	    	labyrinth.heroKillsDragon(labyrinth.getDragons().get(0));
+	   	    	assertTrue(labyrinth.getDragons().get(0).isDead());
+	   	    	labyrinth.move_up(labyrinth.getHero());
+	   	    	labyrinth.move_up(labyrinth.getHero());
+	   	    	assertEquals(labyrinth.getEndGame(), 1);
+	  		 }
+	  		 
+//	  		//g) testar ir para a saida sem a espada 
+	      @Test
+	  		public void testOutwithnoSword() {
+		    	assertTrue(!labyrinth.getHero().isArmedSword());
+		    	labyrinth.move_up(labyrinth.getHero());
+	  			assertEquals(labyrinth.getEndGame(), 0); 
+	       }
+	      
+//	  	 	//h) testar vitoria sem ter morto o dragao 
+	  		@Test 
+	       public void testOutwithDragonAlive() {
+	  			Position p_dragon =  new Position(1,3);
+		    	labyrinth.getDragons().get(0).setPosition(p_dragon);
+	  			labyrinth.move_up(labyrinth.getHero());
+	  			assertEquals(labyrinth.getEndGame(), 0);
+	  		}
 
 }

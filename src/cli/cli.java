@@ -205,7 +205,7 @@ public class cli {
 				System.out.println("Invalid value!");
 			} 
 		}
-		for (int i=0;i<nDragons;i++){
+		for (int i=1;i<nDragons;i++){
 			Dragon d1 = new Dragon();
 			int x = 0, y = 0;
 			Random r = new Random();
