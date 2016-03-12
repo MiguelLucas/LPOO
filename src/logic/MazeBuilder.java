@@ -5,7 +5,7 @@ import java.util.Stack;
 
 import logic.Item.Position;
 
-public class MazeBuilder {
+public class MazeBuilder implements IMazeBuilder {
 	
 	public MazeBuilder() {}
 	
@@ -135,6 +135,7 @@ public class MazeBuilder {
 
 				if (verifyFinished(arrayPositions)){
 					improveLabyrinth(labyrinth);
+					generateExit(labyrinth);
 					return labyrinth;
 				}
 
@@ -182,7 +183,7 @@ public class MazeBuilder {
 		}
 	}
 	
-	public boolean adjacentWalls(String[][]labyrinth, int x, int y){
+	public boolean adjacentWalls(String[][] labyrinth, int x, int y){
 		if (labyrinth[x+1][y] == "X " && labyrinth[x+2][y] == "X " &&
 				labyrinth[x-1][y] == "X " && labyrinth[x-2][y] == "X " && 
 				labyrinth[x][y+1] != "X " && labyrinth[x][y-1] != "X "){
@@ -195,5 +196,57 @@ public class MazeBuilder {
 		}
 		return false;
 		
+	}
+	
+	public void generateExit(String[][] labyrinth){
+		Random r = new Random();
+		int direccao = r.nextInt(4);
+		int posicao = r.nextInt(labyrinth[0].length-2)+1;
+		switch (direccao){
+		case 0:{
+			while (true){
+				if (labyrinth[1][posicao] != "X "){
+					labyrinth[0][posicao] = "S ";
+					break;
+				}
+				else
+					posicao = r.nextInt(labyrinth[0].length-2)+1;
+			}
+			break;
+		}
+		case 1:{
+			while (true){
+				if (labyrinth[labyrinth[0].length-2][posicao] != "X "){
+					labyrinth[labyrinth[0].length-1][posicao] = "S ";
+					break;
+				}
+				else
+					posicao = r.nextInt(labyrinth[0].length-2)+1;
+			}
+			break;
+		}
+		case 2:{
+			while (true){
+				if (labyrinth[posicao][1] != "X "){
+					labyrinth[posicao][0] = "S ";
+					break;
+				}
+				else
+					posicao = r.nextInt(labyrinth[0].length-2)+1;
+			}
+			break;
+		}
+		case 3:{
+			while (true){
+				if (labyrinth[posicao][labyrinth[0].length-2] != "X "){
+					labyrinth[posicao][labyrinth[0].length-1] = "S ";
+					break;
+				}
+				else
+					posicao = r.nextInt(labyrinth[0].length-2)+1;
+			}
+			break;
+		}
+		}
 	}
 }

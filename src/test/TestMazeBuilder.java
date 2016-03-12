@@ -3,14 +3,12 @@ package test;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import logic.GameState;
 import logic.IMazeBuilder;
 import logic.MazeBuilder;
 
 import java.util.Arrays;
 import java.util.Random;
-
-//import logic.IMazeBuilder;
-//import logic.MazeBuilder;
 
 public class TestMazeBuilder {
 	// Auxiliary class
@@ -43,12 +41,12 @@ public class TestMazeBuilder {
 		for (int i = 0; i < n; i++)
 			for (int j = 0; j < n; j++)
 				if (i == 0 || j == 0 || i == n - 1 || j == n - 1)
-					if (m[i][j] == "S")
+					if (m[i][j] == "S "){
 						if ((i == 0 || i == n-1) && (j == 0 || j == n-1))
 							return false;
 						else
 							countExit++;
-					else if (m[i][j] != "X")
+					}else if (m[i][j] != "X ")
 						return false;
 		return countExit == 1;
 	}
@@ -56,7 +54,7 @@ public class TestMazeBuilder {
 
 	// d) there cannot exist 2x2 (or greater) squares with blanks only 
 	// e) there cannot exit 2x2 (or greater) squares with blanks in one diagonal and walls in the other
-	// d) there cannot exist 3x3 (or greater) squares with walls only
+	// f) there cannot exist 3x3 (or greater) squares with walls only
 	private boolean hasSquare(String[][] m, String[][] badWalls) {
 		for (int i = 0; i < m.length - badWalls.length; i++)
 			for (int j = 0; j < m.length - badWalls.length; j++) {
@@ -111,11 +109,11 @@ public class TestMazeBuilder {
 	
 	@Test
 	public void testRandomMazeGenerator() throws IllegalArgumentException {
-		int numMazes = 1000; // number of mazes to generate and test
-		int maxMazeSize = 101; // can change to any odd number >= 5
-		int minMazeSize = 5;
+		int numMazes = 500; // number of mazes to generate and test
+		int maxMazeSize = 101; // can change to any odd number >= 7
+		int minMazeSize = 7;
 		
-		//IMazeBuilder builder = new MazeBuilder();
+		IMazeBuilder builder = new MazeBuilder();
 		String[][]  badWalls  =  {
 				{"X ",  "X ",  "X "},
 				{"X ",  "X ",  "X "},
@@ -132,9 +130,18 @@ public class TestMazeBuilder {
 		
 		Random rand = new Random(); 
 		
-		/*for (int i = 0; i < numMazes; i++) {
+		for (int i = 0; i < numMazes; i++) {
 			int size = maxMazeSize == minMazeSize? minMazeSize : minMazeSize + 2 * rand.nextInt((maxMazeSize - minMazeSize)/2);
-			String[][]m = builder.buildMaze(size);
+			GameState game = new GameState();
+			game.getLabyrinth().setLabyrinth(builder.buildMaze(size));
+			game.generateDragons();
+			game.generateHero();
+			game.generateSword();
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(0).getPosition().getY()][game.getLabyrinth().getDragons().get(0).getPosition().getX()] = game.getLabyrinth().getDragons().get(0).getIcon();
+			
+			String[][]m = game.getLabyrinth().getLabyrinth();
 			assertTrue("Invalid maze boundaries in maze:\n" + m, checkBoundaries(m));			
 			assertTrue("Invalid walls in maze:\n" + m, ! hasSquare(m, badWalls));
 			assertTrue("Invalid spaces in maze:\n" + m, ! hasSquare(m, badSpaces));
@@ -144,9 +151,10 @@ public class TestMazeBuilder {
 			assertNotNull("Missing exit in maze:\n" + m, findPos(m, "S "));
 			assertNotNull("Missing hero in maze:\n" + m, findPos(m, "H "));
 			assertNotNull("Missing dragon in maze:\n" + m, findPos(m, "D "));
-			assertNotNull("Missing sward in maze:\n" + m, findPos(m, "E "));
-			assertFalse("Adjacent hero and dragon in maze:\n" + m, findPos(m, "H ").adjacentTo(findPos(m, "D" )));
-		}	*/
+			assertNotNull("Missing sword in maze:\n" + m, findPos(m, "E "));
+			assertFalse("Adjacent hero and dragon in maze:\n" + m, findPos(m, "H ").adjacentTo(findPos(m, "D " )));
+		
+		}	
 	}
 	
 	public String str(char[][] m) {
