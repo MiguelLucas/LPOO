@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -24,6 +25,7 @@ public class Labyrinth {
 	
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
+	private Sledgehammer sledgehammer = new Sledgehammer();
 	private ArrayList<Dragon> dragons = new ArrayList<Dragon>(); 
 	
 	private String message = "Hero,choose your action!";
@@ -83,6 +85,26 @@ public class Labyrinth {
 		this.message = message;
 	}
 
+	public Sledgehammer getSledgehammer() {
+		return sledgehammer;
+	}
+
+	public void setSledgehammer(Sledgehammer sledgehammer) {
+		this.sledgehammer = sledgehammer;
+	}
+
+	@Override
+	public String toString() {
+		String str = "";
+		for (int i=0;i<labyrinth.length;i++){
+			for (int k=0;k<labyrinth.length;k++){
+				str += labyrinth[i][k];
+			}
+			str += "\n";
+		}
+		return str;
+	}
+
 	public void move_hero(char direction){
 		
 		switch(direction){
@@ -102,6 +124,9 @@ public class Labyrinth {
 		if (position_has_sword(hero.getPosition().getX(),hero.getPosition().getY()))
 				hero_catches_sword();
 		
+		if (positionHasSledgehammer(hero.getPosition()))
+			heroCatchesSledgehammer();
+		
 		
 		if (positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()) != null){
 			//junta o 1º carater do icone do heroi com o 1º carater do dragao
@@ -115,8 +140,9 @@ public class Labyrinth {
 	}
 	
 	public boolean validPosition(int x, int y){
+		Position p = new Position(x, y);
 		if ((labyrinth[y][x] == "  " || position_has_sword(x,y) 
-				|| positionHasDeadDragon(x,y) != null) && !positionHasHero(x,y)){
+				|| positionHasDeadDragon(x,y) != null || positionHasSledgehammer(p)) && !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -239,6 +265,13 @@ public class Labyrinth {
 			return false;
 	}
 	
+	public boolean positionHasSledgehammer(Position p){
+		if (sledgehammer.getPosition().equals(p))
+			return true;
+		else
+			return false;
+	}
+	
 	//testar retornar objeto
 	public Dragon positionHasDeadDragon(int x, int y){
 		for (int i=0;i<dragons.size();i++){
@@ -264,6 +297,16 @@ public class Labyrinth {
 			sword.getPosition().setX(0);
 			sword.getPosition().setY(0);
 			message = "YOU PICKED UP THE SWORD!";
+		}
+	}
+	
+	public void heroCatchesSledgehammer(){
+		if (hero.getPosition().equals(sledgehammer.getPosition()) && !hero.isArmedSledgehammer()){
+			hero.setArmedSledgehammer(true);
+			sledgehammer.setIcon("X ");
+			sledgehammer.getPosition().setX(0);
+			sledgehammer.getPosition().setY(0);
+			message = "YOU PICKED UP THE SLEDGEHAMMER!";
 		}
 	}
 	
@@ -304,9 +347,6 @@ public class Labyrinth {
 			switch (pos){
 			case 0:
 				if(validPosition(d1.getPosition().getX(),d1.getPosition().getY()-1)){
-					//opcao 1
-					//impedir o dragao de se mexer para a mesma posição do dragão
-					//codigo torna-se menos legivel
 					if (positionHasHero(d1.getPosition().getX(),d1.getPosition().getY()-1))
 						break;
 					else{
@@ -357,7 +397,7 @@ public class Labyrinth {
 				break;	
 			}
 		}
-		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()))
+		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()) || positionHasSledgehammer(d1.getPosition()))
 			d1.setIcon("F ");
 		else{
 			if (d1.isSleeping())
@@ -395,5 +435,86 @@ public class Labyrinth {
 		dragons.add(d1);
 	}
 
-	
+	public boolean useSledgehammer(int direction){
+		//0 - up, 1 - down, 2 - left, 3 - right
+		int originalUses = sledgehammer.getUses();
+		if (hero.isArmedSledgehammer()){
+			switch (direction){
+			case 0:
+				if(labyrinth[hero.getPosition().getY()-1][hero.getPosition().getX()] == "X "){
+					if(hero.getPosition().getY()-1 != 0){
+						labyrinth[hero.getPosition().getY()-1][hero.getPosition().getX()] = "  ";
+						sledgehammer.decrementUses();
+					}
+					else {
+						message = "Hero, no matter how hard you try, that wall is indestructible!";
+					}
+					
+				}
+				else {
+					message = "Hero, you can't use the sledgehammer that way!";
+				}
+				break;
+			case 1:
+				if(labyrinth[hero.getPosition().getY()+1][hero.getPosition().getX()] == "X "){
+					if(hero.getPosition().getY()+1 != (labyrinth.length - 1)){
+						labyrinth[hero.getPosition().getY()+1][hero.getPosition().getX()] = "  ";
+						sledgehammer.decrementUses();
+					}
+					else {
+						message = "Hero, no matter how hard you try, that wall is indestructible!";
+					}
+					
+				}
+				else {
+					message = "Hero, you can't use the sledgehammer that way!";
+				}
+				break;
+			case 2:
+				if(labyrinth[hero.getPosition().getY()][hero.getPosition().getX()-1] == "X "){
+					if(hero.getPosition().getX()-1 != 0){
+						labyrinth[hero.getPosition().getY()][hero.getPosition().getX()-1] = "  ";
+						sledgehammer.decrementUses();
+					}
+					else {
+						message = "Hero, no matter how hard you try, that wall is indestructible!";
+					}
+					
+				}
+				else {
+					message = "Hero, you can't use the sledgehammer that way!";
+				}
+				break;
+			case 3:
+				if(labyrinth[hero.getPosition().getY()][hero.getPosition().getX()+1] == "X "){
+					if(hero.getPosition().getX()+1 != (labyrinth.length - 1)){
+						labyrinth[hero.getPosition().getY()][hero.getPosition().getX()+1] = "  ";
+						sledgehammer.decrementUses();
+					}
+					else {
+						message = "Hero, no matter how hard you try, that wall is indestructible!";
+					}
+					
+				}
+				else {
+					message = "Hero, you can't use the sledgehammer that way!";
+				}
+				break;
+			}
+		}
+		if (originalUses != sledgehammer.getUses()){
+			if (sledgehammer.getUses() <= 0){
+				message = "YOU DESTROYED THE WALL WITH YOUR SLEDGEHAMMER\n"
+						+ "But the sledgehammer broke!";
+				hero.setArmedSledgehammer(false);
+			}
+			else {
+				message = "YOU DESTROYED THE WALL WITH YOUR SLEDGEHAMMER\n"
+						+ "Unfortunately, the sledgehammer is showing signs of weariness...";
+			}
+			return true;
+		}
+		
+		return false;
+	}
 }

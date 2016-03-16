@@ -10,6 +10,7 @@ public class GameState {
 	private boolean settingSleep = true;
 	private int sleepRate = 20;
 	private boolean settingMove = true;
+	private boolean settingSledgehammer = true;
 	
 	public GameState() {}
 	
@@ -45,6 +46,14 @@ public class GameState {
 		this.settingMove = settingMove;
 	}
 
+	public boolean isSettingSledgehammer() {
+		return settingSledgehammer;
+	}
+
+	public void setSettingSledgehammer(boolean settingSledgehammer) {
+		this.settingSledgehammer = settingSledgehammer;
+	}
+
 	public void generateLabyrinth(int size){
 		MazeBuilder m1 = new MazeBuilder();
 		labyrinth.setLabyrinth(m1.buildMaze(size));
@@ -59,7 +68,7 @@ public class GameState {
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			
-			if (labyrinth.getLabyrinth()[x][y] == "  "){
+			if (labyrinth.getLabyrinth()[y][x] == "  "){
 				Position p1 = new Position(x, y);
 				boolean jaExiste = false;
 				for (int j=0;j<labyrinth.getDragons().size();j++){
@@ -68,8 +77,8 @@ public class GameState {
 					}
 				}
 				if (!jaExiste){
-					System.out.println("N " + it);
-					System.out.println(p1.toString());
+					/*System.out.println("N " + it);
+					System.out.println(p1.toString());*/
 					labyrinth.getDragons().get(it).setPosition(p1);
 					it++;
 				}
@@ -83,7 +92,7 @@ public class GameState {
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
 			Position temp = new Position(x, y);
-			if (!adjacentDragons(temp)){
+			if (!adjacentDragons(temp) && labyrinth.getLabyrinth()[y][x] == "  "){
 				labyrinth.getHero().setPosition(temp);
 				break;
 			}
@@ -101,6 +110,7 @@ public class GameState {
 				for (int j=0;j<labyrinth.getDragons().size();j++){
 					if(labyrinth.getDragons().get(j).getPosition().equals(p1)){
 						jaExiste = true;
+						break;
 					}
 				}
 				if (labyrinth.getHero().getPosition().equals(p1))
@@ -124,6 +134,33 @@ public class GameState {
 			}
 		}
 		return false;
+	}
+	
+	public void generateSledgehammer(){
+		Random r = new Random();
+		while (true){
+			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			if (labyrinth.getLabyrinth()[x][y] == "  "){
+				Position p1 = new Position(x, y);
+				boolean jaExiste = false;
+				for (int j=0;j<labyrinth.getDragons().size();j++){
+					if(labyrinth.getDragons().get(j).getPosition().equals(p1)){
+						jaExiste = true;
+						break;
+					}
+				}
+				if (labyrinth.getHero().getPosition().equals(p1))
+					jaExiste = true;
+				if (labyrinth.getSword().getPosition().equals(p1))
+					jaExiste = true;
+				if (!jaExiste){
+					labyrinth.getSledgehammer().setPosition(p1);
+					break;
+				}
+			}
+		}
+		labyrinth.getSledgehammer().setUses(labyrinth.getLabyrinth().length/4);
 	}
 	
 	public void saveGame(){
