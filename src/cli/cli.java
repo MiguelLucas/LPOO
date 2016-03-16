@@ -1,5 +1,6 @@
 package cli;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -8,6 +9,7 @@ import javax.xml.ws.handler.MessageContext;
 
 import logic.Dragon;
 import logic.GameState;
+import logic.Hero;
 import logic.Labyrinth;
 import logic.Item.Position;
 
@@ -16,6 +18,9 @@ public class cli {
 		generateDragons(game);
 		game.generateHero();
 		game.generateSword();
+		if (game.isSettingSledgehammer())
+			game.generateSledgehammer();
+		
 		printLabyrinth(game);
 		while (game.getLabyrinth().getEndGame() == 0){
 			moveHeroCli(game);
@@ -101,7 +106,7 @@ public class cli {
 	
 	public static void menuSettings(GameState game){
 		int opt = -1;
-		while(opt < 0 || opt > 3){
+		while(opt < 0 || opt > 4){
 			try {
 				System.out.println("Choose your settings");
 				//voltar atras no menu
@@ -118,6 +123,10 @@ public class cli {
 					System.out.println("[2] Enable/disable dragon sleep (Disabled)");
 				//opcao para percentagem de adormecer
 				System.out.println("[3] Set dragon sleep rate (Currently " + game.getSleepRate() + "%)");
+				if (game.isSettingSledgehammer())
+					System.out.println("[4] Enable/disable sledgehammer (Enabled)");
+				else
+					System.out.println("[4] Enable/disable sledgehammer (Disabled)");
 				/*
 			restantes ficam aqui para futuro uso
 
@@ -145,8 +154,8 @@ public class cli {
 				 */
 				Scanner sc = new Scanner(System.in);
 				opt = sc.nextInt();
-				if(opt < 0 || opt > 3){
-					System.out.println("Please select an option between 0 and 3");
+				if(opt < 0 || opt > 4){
+					System.out.println("Please select an option between 0 and 4");
 				}
 				//sc.close();
 			} catch (InputMismatchException e) {
@@ -185,7 +194,15 @@ public class cli {
 				}
 				game.setSleepRate(sleepRate);
 				System.out.println("Sleep rate successfully changed to " + sleepRate + "%!\n");
+				break;
+			case 4:
+				if (game.isSettingSledgehammer())
+					game.setSettingSledgehammer(false);
+				else
+					game.setSettingSledgehammer(true);
+				break;
 			}
+			
 			menuSettings(game);
 		}
 	}
@@ -221,7 +238,11 @@ public class cli {
 	}
 
 	public static void moveHeroCli(GameState game){
-		System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
+		if (game.getLabyrinth().getHero().isArmedSledgehammer())
+			System.out.println("W-Up, S-Down, A-Left, D-Right, U-Use Sledgehammer, E-Exit Game");
+		else {
+			System.out.println("W-Up, S-Down, A-Left, D-Right, E-Exit Game");
+		}
 		Scanner sc = new Scanner(System.in);
 		char move = Character.toUpperCase(sc.next().charAt(0));
 		
@@ -238,6 +259,14 @@ public class cli {
 		case 'D':
 			game.getLabyrinth().move_hero('D');
 			break;
+		case 'U':
+			if (game.getLabyrinth().getHero().isArmedSledgehammer())
+				useSledgehammerCli(game);
+			else {
+				System.out.println("Invalid direction.");
+				moveHeroCli(game);
+			}
+			break;
 		case 'E':
 			System.out.println("Goodbye :(");
 			sc.close();
@@ -248,25 +277,72 @@ public class cli {
 			break;
 		}
 	}
+	
+	public static void useSledgehammerCli(GameState game){
+		System.out.println("Choose the direction you wish to use the sledgehammer\nW-Up, S-Down, A-Left, D-Right");
+		Scanner sc = new Scanner(System.in);
+		char move = Character.toUpperCase(sc.next().charAt(0));
+		
+		switch(move){
+		case 'W':
+			game.getLabyrinth().useSledgehammer(0);
+			break;
+		case 'S':
+			game.getLabyrinth().useSledgehammer(1);
+			break;
+		case 'A':
+			game.getLabyrinth().useSledgehammer(2);
+			break;
+		case 'D':
+			game.getLabyrinth().useSledgehammer(3);
+			break;
+		default:
+			System.out.println("Invalid direction.");
+			useSledgehammerCli(game);
+			break;
+		}
+	}
+	
 	public static void printLabyrinth(GameState game){
-		//coloca o heroi e a espada no labirinto
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSledgehammer().getPosition().getY()][game.getLabyrinth().getSledgehammer().getPosition().getX()] = game.getLabyrinth().getSledgehammer().getIcon();
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
 		for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(i).getPosition().getY()][game.getLabyrinth().getDragons().get(i).getPosition().getX()] = game.getLabyrinth().getDragons().get(i).getIcon();
 		}
-		//this.labyrinth[dragon.getPosition().getY()][dragon.getPosition().getX()] = dragon.getIcon();
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
 		
-		//this.labyrinth[sword.getY()][sword.getX()] = sword.getIcon();
+		ArrayList<Position> positions = fogOfWar(game);
 		//imprime o labirinto
 		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
-				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
+				Position p1 = new Position(i, j);
+				if (positions.contains(p1))
+					System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
+				else {
+					System.out.print("  ");
+				}
 			}
 			System.out.println();	
 		}
+		
+		
 		printInventory(game);
 		printMessage(game);
+	}
+	
+	public static ArrayList<Position> fogOfWar(GameState game){
+		ArrayList<Position> positions = new ArrayList<Position>();
+		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+				if (Math.sqrt(Math.pow(i-game.getLabyrinth().getHero().getPosition().getX(),2)
+						+ Math.pow(j-game.getLabyrinth().getHero().getPosition().getY(),2)) <= 5){
+					Position p1 = new Position(j, i);
+					positions.add(p1);
+				}
+					
+			}	
+		}
+		return positions;
 	}
 	
 	public static void printInventory(GameState game){
@@ -274,6 +350,8 @@ public class cli {
 		System.out.println("Hero's inventory: ");
 		if (game.getLabyrinth().getHero().isArmedSword())
 			System.out.println("1x Sword ");
+		if (game.getLabyrinth().getHero().isArmedSledgehammer())
+			System.out.println("1x Sledgehammer (" + game.getLabyrinth().getSledgehammer().getUses() + " uses left)");
 		else
 			System.out.println("Nothing");
 		//a acrescentar mais items conforme se vão criando

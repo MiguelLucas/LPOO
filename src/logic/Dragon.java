@@ -2,6 +2,8 @@ package logic;
 
 import java.util.Random;
 
+import javax.swing.Icon;
+
 import logic.Item.Position;
 
 public class Dragon extends Item {
@@ -32,11 +34,11 @@ public class Dragon extends Item {
 			Random sleepiness = new Random();
 			if(sleepiness.nextInt(99) < sleepRate){
 				isSleeping = true; 
-				setIcon("d ");
+				setIcon(getIcon().toLowerCase());
 			}
 			else{
 				isSleeping = false; 
-				setIcon("D ");
+				setIcon(getIcon().toUpperCase());
 			}
 		}
 	}

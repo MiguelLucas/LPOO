@@ -5,6 +5,7 @@ import logic.Item.Position;
 public class Hero extends Item{
 
 	private boolean armedSword;
+	private boolean armedSledgehammer;
 	private boolean isDead;	
 	
 	public Hero(){
@@ -12,6 +13,7 @@ public class Hero extends Item{
 		this.setPosition(p1);
 		this.setIcon("H ");
 		this.armedSword = false;
+		this.armedSledgehammer = false;
 		this.isDead = false;
 	}
 
@@ -23,6 +25,14 @@ public class Hero extends Item{
 		this.armedSword = armedSword;
 	}
 	
+	public boolean isArmedSledgehammer() {
+		return armedSledgehammer;
+	}
+
+	public void setArmedSledgehammer(boolean armedSledgehammer) {
+		this.armedSledgehammer = armedSledgehammer;
+	}
+
 	public boolean isDead() {
 		return isDead;
 	}

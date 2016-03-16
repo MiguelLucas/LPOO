@@ -7,6 +7,13 @@ import logic.GameState;
 import logic.IMazeBuilder;
 import logic.MazeBuilder;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -108,8 +115,8 @@ public class TestMazeBuilder {
 	}
 	
 	@Test
-	public void testRandomMazeGenerator() throws IllegalArgumentException {
-		int numMazes = 500; // number of mazes to generate and test
+	public void testRandomMazeGenerator() throws IllegalArgumentException, IOException {
+		int numMazes = 100; // number of mazes to generate and test
 		int maxMazeSize = 101; // can change to any odd number >= 7
 		int minMazeSize = 7;
 		
@@ -147,6 +154,8 @@ public class TestMazeBuilder {
 			assertTrue("Invalid spaces in maze:\n" + m, ! hasSquare(m, badSpaces));
 			assertTrue("Invalid diagonals in maze:\n" + m, ! hasSquare(m, badDiagonalDown));
 			assertTrue("Invalid diagonals in maze:\n" + m, ! hasSquare(m, badDiagonalUp));
+			
+			writeFile3(m);
 			assertTrue("Maze exit not reachable in maze:\n" + m, checkExitReachable(m));			
 			assertNotNull("Missing exit in maze:\n" + m, findPos(m, "S "));
 			assertNotNull("Missing hero in maze:\n" + m, findPos(m, "H "));
@@ -155,6 +164,19 @@ public class TestMazeBuilder {
 			assertFalse("Adjacent hero and dragon in maze:\n" + m, findPos(m, "H ").adjacentTo(findPos(m, "D " )));
 		
 		}	
+	}
+	
+	public void writeFile3(String[][] m) throws IOException {
+		PrintWriter pw = new PrintWriter(new FileWriter("out.txt"));
+	 
+		for(int i=0;i<m[0].length;i++){
+			for(int j=0;j<m[1].length;j++){
+				pw.print(m[i][j]);
+			}
+			pw.println();	
+		}
+	 
+		pw.close(); 
 	}
 	
 	public String str(char[][] m) {
