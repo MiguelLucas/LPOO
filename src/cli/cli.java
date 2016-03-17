@@ -311,8 +311,8 @@ public class cli {
 		}
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
 		
-		ArrayList<Position> positions = fogOfWar(game);
-		//imprime o labirinto
+		ArrayList<Position> positions = fogOfWar2(game);
+		//imprime o labirinto com fog of war
 		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
 				Position p1 = new Position(i, j);
@@ -321,6 +321,14 @@ public class cli {
 				else {
 					System.out.print("  ");
 				}
+			}
+			System.out.println();	
+		}
+		
+		//imprime o labirinto normal
+		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
 			}
 			System.out.println();	
 		}
@@ -345,6 +353,68 @@ public class cli {
 		return positions;
 	}
 	
+	public static ArrayList<Position> fogOfWar2(GameState game){
+		ArrayList<Position> positions = new ArrayList<Position>();
+		
+		for (int i=1;i<=5;i++){
+			for(int k=-1;k<=1;k++){
+				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+i,
+						game.getLabyrinth().getHero().getPosition().getX()+k);
+				positions.add(p1);
+			}
+			
+			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()+i][game.getLabyrinth().getHero().getPosition().getX()]
+					== "X "){
+				break;
+			}
+		}
+
+		for (int i=1;i<=5;i++){
+			for(int k=-1;k<=1;k++){
+				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()-i,
+						game.getLabyrinth().getHero().getPosition().getX()+k);
+				positions.add(p1);
+			}
+			
+			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()-i][game.getLabyrinth().getHero().getPosition().getX()]
+					== "X "){
+				break;
+			}
+		}
+
+		for (int i=1;i<=5;i++){
+			for(int k=-1;k<=1;k++){
+				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+k,
+						game.getLabyrinth().getHero().getPosition().getX()+i);
+				positions.add(p1);
+			}
+			
+			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()+i]
+					== "X "){
+				break;
+			}
+		}
+		
+		for (int i=1;i<=5;i++){
+			for(int k=-1;k<=1;k++){
+				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+k,
+						game.getLabyrinth().getHero().getPosition().getX()-i);
+				positions.add(p1);
+			}
+			
+			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()-i]
+					== "X "){
+				break;
+			}
+		}
+		Position posHero = new Position(game.getLabyrinth().getHero().getPosition().getY(), game.getLabyrinth().getHero().getPosition().getX());
+		positions.add(posHero);
+		for(int i=0;i<positions.size();i++){
+			System.out.println(positions.get(i).toString() + "\n");
+		}
+		return positions;
+	}
+
 	public static void printInventory(GameState game){
 		System.out.println("----------------------");
 		System.out.println("Hero's inventory: ");
