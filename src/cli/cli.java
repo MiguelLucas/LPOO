@@ -326,12 +326,12 @@ public class cli {
 		}
 		
 		//imprime o labirinto normal
-		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+		/*for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
 				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
 			}
 			System.out.println();	
-		}
+		}*/
 		
 		
 		printInventory(game);
@@ -409,9 +409,9 @@ public class cli {
 		}
 		Position posHero = new Position(game.getLabyrinth().getHero().getPosition().getY(), game.getLabyrinth().getHero().getPosition().getX());
 		positions.add(posHero);
-		for(int i=0;i<positions.size();i++){
+		/*for(int i=0;i<positions.size();i++){
 			System.out.println(positions.get(i).toString() + "\n");
-		}
+		}*/
 		return positions;
 	}
 
