@@ -11,6 +11,10 @@ public class GameState {
 	private int sleepRate = 20;
 	private boolean settingMove = true;
 	private boolean settingSledgehammer = true;
+	private boolean settingFogOfWar = true;
+	private int fogOfWarRadius = 5;
+	private boolean settingTorch = true;
+	private int torchRadius = 7;
 	
 	public GameState() {}
 	
@@ -54,6 +58,38 @@ public class GameState {
 		this.settingSledgehammer = settingSledgehammer;
 	}
 
+	public boolean isSettingFogOfWar() {
+		return settingFogOfWar;
+	}
+
+	public void setSettingFogOfWar(boolean settingFogOfWar) {
+		this.settingFogOfWar = settingFogOfWar;
+	}
+
+	public int getFogOfWarRadius() {
+		return fogOfWarRadius;
+	}
+
+	public void setFogOfWarRadius(int fogOfWarRadius) {
+		this.fogOfWarRadius = fogOfWarRadius;
+	}
+
+	public boolean isSettingTorch() {
+		return settingTorch;
+	}
+
+	public void setSettingTorch(boolean settingTorch) {
+		this.settingTorch = settingTorch;
+	}
+
+	public int getTorchRadius() {
+		return torchRadius;
+	}
+
+	public void setTorchRadius(int torchRadius) {
+		this.torchRadius = torchRadius;
+	}
+
 	public void generateLabyrinth(int size){
 		MazeBuilder m1 = new MazeBuilder();
 		labyrinth.setLabyrinth(m1.buildMaze(size));
@@ -61,8 +97,22 @@ public class GameState {
 	
 	
 
-	public void generateDragons(){
+	public void generateDragons(int nDragons){
 		Random r = new Random();
+		
+		for (int i=1;i<nDragons;i++){
+			int size = labyrinth.getLabyrinth()[0].length;
+			Dragon d1 = new Dragon();
+			int x = 0, y = 0;
+			while (labyrinth.getLabyrinth()[y][x] != "  "){
+				x = r.nextInt(size-1)+1;
+				y = r.nextInt(size-1)+1;
+			}
+			d1.getPosition().setX(x);
+			d1.getPosition().setY(y);
+			labyrinth.addDragon(d1);
+		}
+		
 		int it = 0;
 		while (it < labyrinth.getDragons().size()){
 			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;

@@ -141,9 +141,10 @@ public class TestMazeBuilder {
 			int size = maxMazeSize == minMazeSize? minMazeSize : minMazeSize + 2 * rand.nextInt((maxMazeSize - minMazeSize)/2);
 			GameState game = new GameState();
 			game.getLabyrinth().setLabyrinth(builder.buildMaze(size));
-			game.generateDragons();
+			game.generateDragons(1);
 			game.generateHero();
 			game.generateSword();
+			
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(0).getPosition().getY()][game.getLabyrinth().getDragons().get(0).getPosition().getX()] = game.getLabyrinth().getDragons().get(0).getIcon();

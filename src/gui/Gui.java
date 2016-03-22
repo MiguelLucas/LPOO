@@ -8,17 +8,23 @@ import javax.swing.JTextField;
 import logic.GameState;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 
-public class Gui {
+public class Gui extends JPanel implements KeyListener{
 
-	private JFrame mainWindow;
+	private static JFrame mainWindow;
 	private JTextField textField_LabyrinthSize;
 	private JTextField textField_NumberOfDragons;
+	private JTextArea textArea;
+	
+	private GameState game = new GameState();
 
 	/**
 	 * Launch the application.
@@ -28,12 +34,15 @@ public class Gui {
 			public void run() {
 				try {
 					Gui window = new Gui();
-					window.mainWindow.setVisible(true);
+					Gui.mainWindow.setVisible(true);
+					Gui.mainWindow.addKeyListener(window);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
 			}
 		});
+		
 	}
 
 	/**
@@ -41,6 +50,8 @@ public class Gui {
 	 */
 	public Gui() {
 		initialize();
+		this.addKeyListener(this);
+		requestFocus();
 	}
 
 	/**
@@ -52,6 +63,13 @@ public class Gui {
 		mainWindow.setBounds(100, 100, 526, 414);
 		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainWindow.getContentPane().setLayout(null);
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setBounds(23, 147, 302, 227);
+		//textArea.addKeyListener(this);
+		//textArea.requestFocus();
+		mainWindow.getContentPane().add(textArea);
 		
 		textField_LabyrinthSize = new JTextField();
 		textField_LabyrinthSize.setText("11");
@@ -89,9 +107,7 @@ public class Gui {
 		btnExit.setBounds(297, 114, 62, 18);
 		mainWindow.getContentPane().add(btnExit);
 		
-		final JTextArea textArea = new JTextArea();
-		textArea.setBounds(23, 147, 302, 227);
-		mainWindow.getContentPane().add(textArea);
+		
 		
 		JButton btnUp = new JButton("Up");
 		btnUp.setBounds(380, 148, 89, 23);
@@ -99,8 +115,13 @@ public class Gui {
 		mainWindow.getContentPane().add(btnUp);
 		
 		JButton btnLeft = new JButton("Left");
+		btnLeft.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				game.getLabyrinth().move_hero('A');
+				showLabyrinth();
+			}
+		});
 		btnLeft.setBounds(335, 182, 89, 23);
-		btnLeft.setEnabled(false);
 		mainWindow.getContentPane().add(btnLeft);
 		
 		JButton btnRight = new JButton("Right");
@@ -115,19 +136,54 @@ public class Gui {
 		
 		btnGenerateNewLabyrinth.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				GameState game = new GameState();
 				game.generateLabyrinth(Integer.parseInt(textField_LabyrinthSize.getText()));
-				String lab = "";
-				for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
-					for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
-						lab += game.getLabyrinth().getLabyrinth()[i][j];
-						if (game.getLabyrinth().getLabyrinth()[i][j] == "  ")
-							lab += " ";
-					}
-					lab += "\n";	
-				}
-				textArea.setText(lab);
+				game.generateDragons(Integer.parseInt(textField_NumberOfDragons.getText()));
+				game.generateHero();
+				game.generateSword();
+				if (game.isSettingSledgehammer())
+					game.generateSledgehammer();
+				showLabyrinth();
+				
+				
 			}
 		});
+		
 	}
+	
+	public void showLabyrinth(){
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSledgehammer().getPosition().getY()][game.getLabyrinth().getSledgehammer().getPosition().getX()] = game.getLabyrinth().getSledgehammer().getIcon();
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
+		for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(i).getPosition().getY()][game.getLabyrinth().getDragons().get(i).getPosition().getX()] = game.getLabyrinth().getDragons().get(i).getIcon();
+		}
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
+		String lab = "";
+		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+				lab += game.getLabyrinth().getLabyrinth()[i][j];
+				if (game.getLabyrinth().getLabyrinth()[i][j] == "  ")
+					lab += " ";
+			}
+			lab += "\n";	
+		}
+		textArea.setText(lab);
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch(e.getKeyCode()){
+		case KeyEvent.VK_LEFT: 
+			game.getLabyrinth().move_hero('A');
+			textArea.setText(e.getKeyCode() + "");
+			showLabyrinth();
+			break;
+		}
+
+	}
+	// Ignored keyboard events
+	@Override
+	public void keyReleased(KeyEvent e) {}
+
+	@Override
+	public void keyTyped(KeyEvent e) {}
 }

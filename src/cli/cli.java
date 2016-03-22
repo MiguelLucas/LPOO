@@ -8,6 +8,7 @@ import java.util.Scanner;
 import javax.xml.ws.handler.MessageContext;
 
 import logic.Dragon;
+import logic.FogOfWar;
 import logic.GameState;
 import logic.Hero;
 import logic.Labyrinth;
@@ -20,6 +21,8 @@ public class cli {
 		game.generateSword();
 		if (game.isSettingSledgehammer())
 			game.generateSledgehammer();
+		if (game.isSettingTorch())
+			game.getLabyrinth().getHero().setTorches(game.getLabyrinth().getLabyrinth()[0].length/3);
 		
 		printLabyrinth(game);
 		while (game.getLabyrinth().getEndGame() == 0){
@@ -106,7 +109,7 @@ public class cli {
 	
 	public static void menuSettings(GameState game){
 		int opt = -1;
-		while(opt < 0 || opt > 4){
+		while(opt < 0 || opt > 8){
 			try {
 				System.out.println("Choose your settings");
 				//voltar atras no menu
@@ -127,34 +130,20 @@ public class cli {
 					System.out.println("[4] Enable/disable sledgehammer (Enabled)");
 				else
 					System.out.println("[4] Enable/disable sledgehammer (Disabled)");
-				/*
-			restantes ficam aqui para futuro uso
-
-			if (l.isSetting_dragon_fire())
-				System.out.println("[1] Enable/disable dragon fire (Enabled)");
-			else
-				System.out.println("[1] Enable/disable dragon fire (Disabled)");
-
-			if (l.isSetting_spear())
-				System.out.println("[4] Enable/disable retrivable spears (Enabled)");
-			else
-				System.out.println("[4] Enable/disable retrivable spears (Disabled)");
-			if (l.isSetting_shield_generate())
-				System.out.println("[5] Enable/disable shield generation (Enabled)");
-			else
-				System.out.println("[5] Enable/disable shield generation (Disabled)");
-			if (l.isSetting_shield_start())
-				System.out.println("[6] Enable/disable starting shield (Enabled)");
-			else
-				System.out.println("[6] Enable/disable starting shield (Disabled)");
-			if (l.isSetting_sledgehammer())
-				System.out.println("[7] Enable/disable sledgehammer (Enabled)");
-			else
-				System.out.println("[7] Enable/disable sledgehammer (Disabled)");
-				 */
+				if (game.isSettingFogOfWar())
+					System.out.println("[5] Enable/disable fog of war (Enabled)");
+				else
+					System.out.println("[5] Enable/disable fog of war (Disabled)");
+				System.out.println("[6] Set fog of war radius (Currently " + game.getFogOfWarRadius() + "%)");
+				if (game.isSettingFogOfWar())
+					System.out.println("[7] Enable/disable torches (Enabled)");
+				else
+					System.out.println("[7] Enable/disable torches (Disabled)");
+				System.out.println("[8] Set torch radius (Currently " + game.getTorchRadius() + "%)");
+			
 				Scanner sc = new Scanner(System.in);
 				opt = sc.nextInt();
-				if(opt < 0 || opt > 4){
+				if(opt < 0 || opt > 8){
 					System.out.println("Please select an option between 0 and 4");
 				}
 				//sc.close();
@@ -201,6 +190,54 @@ public class cli {
 				else
 					game.setSettingSledgehammer(true);
 				break;
+			case 5:
+				if (game.isSettingFogOfWar())
+					game.setSettingFogOfWar(false);
+				else
+					game.setSettingFogOfWar(true);
+				break;
+			case 6:
+				int fogOfWarRadius = 0;
+				while (fogOfWarRadius < 1 || fogOfWarRadius > 20){
+					try {
+						System.out.println("Insert new fog of war radius (1-20)");
+						Scanner sc = new Scanner(System.in);
+						fogOfWarRadius = sc.nextInt();
+						if(fogOfWarRadius < 1 || fogOfWarRadius > 20){
+							System.out.println("Please select a value between 1 and 20");
+						}
+						//sc.close();
+					} catch (InputMismatchException e) {
+						System.out.println("Invalid value!");
+					}
+				}
+				game.setFogOfWarRadius(fogOfWarRadius);
+				System.out.println("Fog of war radius successfully changed to " + fogOfWarRadius + "!\n");
+				break;
+			case 7:
+				if (game.isSettingTorch())
+					game.setSettingTorch(false);
+				else
+					game.setSettingTorch(true);
+				break;
+			case 8:
+				int torchRadius = 0;
+				while (torchRadius < 1 || torchRadius > 20){
+					try {
+						System.out.println("Insert new torch radius (1-20)");
+						Scanner sc = new Scanner(System.in);
+						torchRadius = sc.nextInt();
+						if(torchRadius < 1 || torchRadius > 20){
+							System.out.println("Please select a value between 1 and 20");
+						}
+						//sc.close();
+					} catch (InputMismatchException e) {
+						System.out.println("Invalid value!");
+					}
+				}
+				game.setTorchRadius(torchRadius);
+				System.out.println("Torch radius successfully changed to " + torchRadius + "!\n");
+				break;
 			}
 			
 			menuSettings(game);
@@ -222,19 +259,8 @@ public class cli {
 				System.out.println("Invalid value!");
 			} 
 		}
-		for (int i=1;i<nDragons;i++){
-			Dragon d1 = new Dragon();
-			int x = 0, y = 0;
-			Random r = new Random();
-			while (game.getLabyrinth().getLabyrinth()[y][x] != "  "){
-				x = r.nextInt(size-1)+1;
-				y = r.nextInt(size-1)+1;
-			}
-			d1.getPosition().setX(x);
-			d1.getPosition().setY(y);
-			game.getLabyrinth().addDragon(d1);
-		}
-		game.generateDragons();
+		
+		game.generateDragons(nDragons);
 	}
 
 	public static void moveHeroCli(GameState game){
@@ -266,6 +292,9 @@ public class cli {
 				System.out.println("Invalid direction.");
 				moveHeroCli(game);
 			}
+			break;
+		case 'T':
+			game.getLabyrinth().useTorch();
 			break;
 		case 'E':
 			System.out.println("Goodbye :(");
@@ -309,111 +338,45 @@ public class cli {
 		for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(i).getPosition().getY()][game.getLabyrinth().getDragons().get(i).getPosition().getX()] = game.getLabyrinth().getDragons().get(i).getIcon();
 		}
+		
+		for (int i=0;i<game.getLabyrinth().getTorches().size();i++){
+			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getTorches().get(i).getPosition().getY()][game.getLabyrinth().getTorches().get(i).getPosition().getX()] = game.getLabyrinth().getTorches().get(i).getIcon();
+		}
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
 		
-		ArrayList<Position> positions = fogOfWar2(game);
-		//imprime o labirinto com fog of war
-		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
-			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
-				Position p1 = new Position(i, j);
-				if (positions.contains(p1))
-					System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
-				else {
-					System.out.print("  ");
+		if (game.getLabyrinth().getEndGame() == 0 && game.isSettingFogOfWar()){
+			FogOfWar fog = new FogOfWar();
+			fog.updateFogOfWar(game);
+			//imprime o labirinto com fog of war
+			for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+				for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+					Position p1 = new Position(i, j);
+					if (fog.getVisiblePositions().contains(p1))
+						System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
+					else {
+						System.out.print("  ");
+					}
 				}
+				System.out.println();	
 			}
-			System.out.println();	
+		}else {
+			//imprime o labirinto normal
+			for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+				for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
+					System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
+				}
+				System.out.println();	
+			}
 		}
 		
-		//imprime o labirinto normal
-		/*for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
-			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
-				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
-			}
-			System.out.println();	
-		}*/
+		
 		
 		
 		printInventory(game);
 		printMessage(game);
 	}
 	
-	public static ArrayList<Position> fogOfWar(GameState game){
-		ArrayList<Position> positions = new ArrayList<Position>();
-		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
-			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
-				if (Math.sqrt(Math.pow(i-game.getLabyrinth().getHero().getPosition().getX(),2)
-						+ Math.pow(j-game.getLabyrinth().getHero().getPosition().getY(),2)) <= 5){
-					Position p1 = new Position(j, i);
-					positions.add(p1);
-				}
-					
-			}	
-		}
-		return positions;
-	}
 	
-	public static ArrayList<Position> fogOfWar2(GameState game){
-		ArrayList<Position> positions = new ArrayList<Position>();
-		
-		for (int i=1;i<=5;i++){
-			for(int k=-1;k<=1;k++){
-				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+i,
-						game.getLabyrinth().getHero().getPosition().getX()+k);
-				positions.add(p1);
-			}
-			
-			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()+i][game.getLabyrinth().getHero().getPosition().getX()]
-					== "X "){
-				break;
-			}
-		}
-
-		for (int i=1;i<=5;i++){
-			for(int k=-1;k<=1;k++){
-				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()-i,
-						game.getLabyrinth().getHero().getPosition().getX()+k);
-				positions.add(p1);
-			}
-			
-			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()-i][game.getLabyrinth().getHero().getPosition().getX()]
-					== "X "){
-				break;
-			}
-		}
-
-		for (int i=1;i<=5;i++){
-			for(int k=-1;k<=1;k++){
-				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+k,
-						game.getLabyrinth().getHero().getPosition().getX()+i);
-				positions.add(p1);
-			}
-			
-			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()+i]
-					== "X "){
-				break;
-			}
-		}
-		
-		for (int i=1;i<=5;i++){
-			for(int k=-1;k<=1;k++){
-				Position p1 = new Position(game.getLabyrinth().getHero().getPosition().getY()+k,
-						game.getLabyrinth().getHero().getPosition().getX()-i);
-				positions.add(p1);
-			}
-			
-			if (game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()-i]
-					== "X "){
-				break;
-			}
-		}
-		Position posHero = new Position(game.getLabyrinth().getHero().getPosition().getY(), game.getLabyrinth().getHero().getPosition().getX());
-		positions.add(posHero);
-		/*for(int i=0;i<positions.size();i++){
-			System.out.println(positions.get(i).toString() + "\n");
-		}*/
-		return positions;
-	}
 
 	public static void printInventory(GameState game){
 		System.out.println("----------------------");
@@ -422,6 +385,8 @@ public class cli {
 			System.out.println("1x Sword ");
 		if (game.getLabyrinth().getHero().isArmedSledgehammer())
 			System.out.println("1x Sledgehammer (" + game.getLabyrinth().getSledgehammer().getUses() + " uses left)");
+		if (game.getLabyrinth().getHero().hasTorches())
+			System.out.println(game.getLabyrinth().getHero().getTorches() + "x Torches ");
 		else
 			System.out.println("Nothing");
 		//a acrescentar mais items conforme se vão criando

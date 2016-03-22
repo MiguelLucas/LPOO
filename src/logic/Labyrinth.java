@@ -26,7 +26,9 @@ public class Labyrinth {
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
 	private Sledgehammer sledgehammer = new Sledgehammer();
-	private ArrayList<Dragon> dragons = new ArrayList<Dragon>(); 
+	private ArrayList<Dragon> dragons = new ArrayList<Dragon>();
+	
+	private ArrayList<Torch> torches = new ArrayList<Torch>(); 
 	
 	private String message = "Hero,choose your action!";
 	
@@ -93,6 +95,14 @@ public class Labyrinth {
 		this.sledgehammer = sledgehammer;
 	}
 
+	public ArrayList<Torch> getTorches() {
+		return torches;
+	}
+
+	public void setTorches(ArrayList<Torch> torches) {
+		this.torches = torches;
+	}
+
 	@Override
 	public String toString() {
 		String str = "";
@@ -142,7 +152,8 @@ public class Labyrinth {
 	public boolean validPosition(int x, int y){
 		Position p = new Position(x, y);
 		if ((labyrinth[y][x] == "  " || position_has_sword(x,y) 
-				|| positionHasDeadDragon(x,y) != null || positionHasSledgehammer(p)) && !positionHasHero(x,y)){
+				|| positionHasDeadDragon(x,y) != null || positionHasSledgehammer(p)
+				|| positionHasTorch(p)) && !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -288,6 +299,14 @@ public class Labyrinth {
 			return true;
 		else
 			return false;
+	}
+	
+	public boolean positionHasTorch(Position p){
+		for (int i=0;i<torches.size();i++){
+			if (torches.get(i).getPosition().equals(p))
+				return true;
+		}
+		return false;
 	}
 	public void hero_catches_sword(){
 		if (hero.getPosition().equals(sword.getPosition()) && !hero.isArmedSword()){
@@ -516,5 +535,18 @@ public class Labyrinth {
 		}
 		
 		return false;
+	}
+	
+	public void useTorch(){
+		if (hero.hasTorches()){
+			Torch t1 = new Torch();
+			Position p1 = new Position(hero.getPosition().getX(), hero.getPosition().getY());
+			t1.setPosition(p1);
+			torches.add(t1);
+			message = "The hallway is filled by the light of your torch!\n You used 1 torch.\n";
+			hero.decrementTorches();
+		}else {
+			message = "Hero, you don't have any more torches!\n";
+		}
 	}
 }

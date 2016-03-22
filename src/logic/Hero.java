@@ -6,7 +6,8 @@ public class Hero extends Item{
 
 	private boolean armedSword;
 	private boolean armedSledgehammer;
-	private boolean isDead;	
+	private boolean isDead;
+	private int torches;
 	
 	public Hero(){
 		Position p1 = new Position(1, 1);
@@ -15,6 +16,7 @@ public class Hero extends Item{
 		this.armedSword = false;
 		this.armedSledgehammer = false;
 		this.isDead = false;
+		this.torches = 0;
 	}
 
 	public boolean isArmedSword() {
@@ -38,5 +40,23 @@ public class Hero extends Item{
 	}
 	public void setDead(boolean isDead) {
 		this.isDead = isDead;
+	}
+
+	public int getTorches() {
+		return torches;
+	}
+
+	public void setTorches(int torches) {
+		this.torches = torches;
 	}	
+	
+	public boolean hasTorches() {
+		if (torches <= 0)
+			return false;
+		return true;
+	}
+	
+	public void decrementTorches() {
+		torches--;
+	}
 }

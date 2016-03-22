@@ -28,6 +28,7 @@ public class MazeBuilder implements IMazeBuilder {
 		//--------------------------------------
 		//Escolher uma posicao inicial livre aleatoriamente
 		Random r = new Random();
+		r.setSeed(1);
 		int xIni = r.nextInt(size);
 		int yIni = r.nextInt(size);
 		while (xIni%2 == 0)

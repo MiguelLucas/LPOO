@@ -20,7 +20,7 @@ public class Sledgehammer extends Item{
 	}
 	
 	public void decrementUses(){
-		this.uses--;
+		uses--;
 	}
 
 }
