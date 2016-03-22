@@ -26,10 +26,11 @@ public class Labyrinth {
 	private Hero hero = new Hero();
 	private Sword sword = new Sword();
 	private Sledgehammer sledgehammer = new Sledgehammer();
+	//LA
+	private Spear spear = new Spear(); 
 	private ArrayList<Dragon> dragons = new ArrayList<Dragon>(); 
 	
 	private String message = "Hero,choose your action!";
-	
 	
 	private String[][] labyrinth = 
 		{{"X ","X ","X ","X ","X ","X ","X ","X ","X ","X "},
@@ -93,6 +94,15 @@ public class Labyrinth {
 		this.sledgehammer = sledgehammer;
 	}
 
+	//LA
+	public Spear getSpear() {
+		return spear;
+	}
+
+	public void setSpear(Spear spear) {
+		this.spear = spear;
+	}
+	
 	@Override
 	public String toString() {
 		String str = "";
@@ -126,7 +136,12 @@ public class Labyrinth {
 		
 		if (positionHasSledgehammer(hero.getPosition()))
 			heroCatchesSledgehammer();
-		
+	
+		//LA
+		//Falta o que acontece quando ele apanha a lança
+
+		if (positionHasSpear(hero.getPosition()))
+			heroCatchesSpear();
 		
 		if (positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()) != null){
 			//junta o 1º carater do icone do heroi com o 1º carater do dragao
@@ -139,10 +154,11 @@ public class Labyrinth {
 		
 	}
 	
+	//LA 
 	public boolean validPosition(int x, int y){
 		Position p = new Position(x, y);
 		if ((labyrinth[y][x] == "  " || position_has_sword(x,y) 
-				|| positionHasDeadDragon(x,y) != null || positionHasSledgehammer(p)) && !positionHasHero(x,y)){
+				|| positionHasDeadDragon(x,y) != null || positionHasSledgehammer(p) || positionHasSpear(p)) && !positionHasHero(x,y)){
 			return true;
 		}
 		else
@@ -272,6 +288,14 @@ public class Labyrinth {
 			return false;
 	}
 	
+	//LA
+	public boolean positionHasSpear(Position p){
+		if (spear.getPosition().equals(p))
+			return true;
+		else
+			return false;
+	}
+	
 	//testar retornar objeto
 	public Dragon positionHasDeadDragon(int x, int y){
 		for (int i=0;i<dragons.size();i++){
@@ -282,6 +306,19 @@ public class Labyrinth {
 		}
 		return null;
 	}
+	//LA 
+	//verdadeira 
+	public boolean HasDeadDragon(int x, int y){
+		for (int i=0;i<dragons.size();i++){
+			Position p1 = new Position(x, y);
+			if (dragons.get(i).getPosition().equals(p1) && dragons.get(i).isDead()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	
 	public boolean positionHasHero(int x, int y){
 		if (hero.getPosition().getX() == x && hero.getPosition().getY() == y)
@@ -289,6 +326,7 @@ public class Labyrinth {
 		else
 			return false;
 	}
+	
 	public void hero_catches_sword(){
 		if (hero.getPosition().equals(sword.getPosition()) && !hero.isArmedSword()){
 			hero.setIcon("A ");
@@ -310,7 +348,26 @@ public class Labyrinth {
 		}
 	}
 	
-	
+	//LA
+	//PARA A LANÇA
+	public void heroCatchesSpear(){
+		if (hero.getPosition().equals(spear.getPosition()) && !hero.isArmedSpear()){
+			hero.setArmedSpear(true);
+			if(HasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY())){
+				//isto muda a da lanca em vez da do dragao, nao entendo pq
+				positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()).setIcon("M ");
+				//DragonClean(positionHasDeadDragon(hero.getPosition().getX(),hero.getPosition().getY()));		
+				message = "YOU PICKED UP THE SPEAR AGAIN!";
+			}
+			//acho que este parenteses sao inuteis mas... 
+			else
+			{message = "YOU PICKED UP THE SPEAR!";}	
+			spear.setIcon("X ");
+			spear.getPosition().setX(0);
+			spear.getPosition().setY(0);	
+		}
+	}
+
 	public void heroKillsDragon(Dragon d1){
 		if(hero.isArmedSword()){
 			if((hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()) ||
@@ -318,13 +375,29 @@ public class Labyrinth {
 					(hero.getPosition().getX()==d1.getPosition().getX()-1 && hero.getPosition().getY()==d1.getPosition().getY()) ||
 					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()+1) ||
 					(hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()-1)){ 
-
 				d1.setIcon("M ");
 				d1.setDead(true);
 				message = "YOU KILLED A DRAGON! This dungeon is a bit more secure now.";
 			}
 		}
 	}
+	
+	//LA 
+	public void spearKillsDragon(Dragon d1, String seta){				
+				//System.out.println("a lanca esta tentando me matar");
+				d1.setIcon(seta + "M");
+				d1.setDead(true);
+				getHero().setArmedSpear(false);
+				message = "YOUR AIM IS AWESOME! One more dragon is gone.";
+			}
+	
+	//LA
+	public void DragonClean(Dragon d1){				
+		//spear.setIcon(seta.substring(0,1) + positionHasDeadDragon(spear.getPosition().getX(),spear.getPosition().getY()).getIcon().substring(0,1));
+		d1.setIcon("M ");
+		d1.setDead(true);
+	}
+	
 	public void dragonKillsHero(Dragon d1){
 		if (!d1.isSleeping() && !d1.isDead()){
 			if((hero.getPosition().getX()==d1.getPosition().getX() && hero.getPosition().getY()==d1.getPosition().getY()) ||
@@ -397,7 +470,8 @@ public class Labyrinth {
 				break;	
 			}
 		}
-		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()) || positionHasSledgehammer(d1.getPosition()))
+		//LA
+		if (position_has_sword(d1.getPosition().getX(),d1.getPosition().getY()) || positionHasSledgehammer(d1.getPosition()) || positionHasSpear(d1.getPosition()) )
 			d1.setIcon("F ");
 		else{
 			if (d1.isSleeping())
@@ -407,8 +481,6 @@ public class Labyrinth {
 			}
 		}
 			
-			
-		
 		if (positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()) != null){
 			//a rever quando forem criados mais dragões
 			d1.setIcon(d1.getIcon().substring(0,1) + 
@@ -418,6 +490,19 @@ public class Labyrinth {
 			d1.setIcon(d1.getIcon().substring(0,1) + " ");
 		
 		return direction;
+	}
+	
+	//LA 
+	//Pensei que podia ser util
+	public void PositionSplit(Item d1){
+		
+	if (positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()) != null){
+		d1.setIcon(d1.getIcon().substring(0,1) + 
+				positionHasDeadDragon(d1.getPosition().getX(),d1.getPosition().getY()).getIcon().substring(0,1));
+	}
+	else
+		d1.setIcon(d1.getIcon().substring(0,1) + " ");
+	
 	}
 	
 	public void gameOver(boolean win){
@@ -442,6 +527,7 @@ public class Labyrinth {
 			switch (direction){
 			case 0:
 				if(labyrinth[hero.getPosition().getY()-1][hero.getPosition().getX()] == "X "){
+					//Verificar se e uma margem
 					if(hero.getPosition().getY()-1 != 0){
 						labyrinth[hero.getPosition().getY()-1][hero.getPosition().getX()] = "  ";
 						sledgehammer.decrementUses();
@@ -516,5 +602,58 @@ public class Labyrinth {
 		}
 		
 		return false;
+	}
+	
+	
+	//LA
+	//IDEIA INICIAL
+	public void useSpear(int direction){
+		//0 - up, 1 - down, 2 - left, 3 - right
+		if (hero.isArmedSpear()){
+			switch (direction){
+			//up
+			case 0:
+				spear.setIcon("^ ");
+				spear.getPosition().setX(hero.getPosition().getX());
+				spear.getPosition().setY(hero.getPosition().getY());
+				while(labyrinth[spear.getPosition().getY()-1][spear.getPosition().getX()] != "X " && labyrinth[spear.getPosition().getY()-1][spear.getPosition().getX()] != "D " && labyrinth[spear.getPosition().getY()-1][spear.getPosition().getX()] != "S "){
+						move_up(spear);
+				}
+				hero.setArmedSpear(false);
+				break;
+			//down 
+			case 1:
+				spear.setIcon("v ");
+				spear.getPosition().setX(hero.getPosition().getX());
+				spear.getPosition().setY(hero.getPosition().getY());
+				while(labyrinth[spear.getPosition().getY()+1][spear.getPosition().getX()] != "X " && labyrinth[spear.getPosition().getY()+1][spear.getPosition().getX()] != "D " && labyrinth[spear.getPosition().getY()+1][spear.getPosition().getX()] != "S " ){
+					move_down(spear);
+				}
+				hero.setArmedSpear(false);
+				break;
+			//leftuerda
+			case 2:
+				spear.setIcon("< ");
+				spear.getPosition().setX(hero.getPosition().getX());
+				spear.getPosition().setY(hero.getPosition().getY());
+				
+				while(labyrinth[spear.getPosition().getY()][spear.getPosition().getX()-1] != "X " || labyrinth[spear.getPosition().getY()][spear.getPosition().getX()-1] != "D " && labyrinth[spear.getPosition().getY()][spear.getPosition().getX()-1] != "S "){
+					move_left(spear);
+				}
+				hero.setArmedSpear(false);
+				break;
+				//right
+			case 3:
+				spear.setIcon("> ");
+				spear.getPosition().setX(hero.getPosition().getX());
+				spear.getPosition().setY(hero.getPosition().getY());
+				
+				while(labyrinth[spear.getPosition().getY()][spear.getPosition().getX()+1] != "X " || labyrinth[spear.getPosition().getY()][spear.getPosition().getX()+1] != "D " && labyrinth[spear.getPosition().getY()+1][spear.getPosition().getX()] != "S "){
+					move_left(spear);
+				}
+				hero.setArmedSpear(false);
+				break;
+			}
+		}
 	}
 }

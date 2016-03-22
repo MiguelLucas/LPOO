@@ -11,6 +11,8 @@ public class GameState {
 	private int sleepRate = 20;
 	private boolean settingMove = true;
 	private boolean settingSledgehammer = true;
+	//LA
+	private boolean settingSpear = true;
 	
 	public GameState() {}
 	
@@ -52,6 +54,16 @@ public class GameState {
 
 	public void setSettingSledgehammer(boolean settingSledgehammer) {
 		this.settingSledgehammer = settingSledgehammer;
+	}
+	
+	//LA 
+	
+	public boolean isSettingSpear() {
+		return settingSpear;
+	}
+
+	public void setSettingSpear(boolean settingSpear) {
+		this.settingSpear = settingSpear;
 	}
 
 	public void generateLabyrinth(int size){
@@ -162,6 +174,35 @@ public class GameState {
 		}
 		labyrinth.getSledgehammer().setUses(labyrinth.getLabyrinth().length/4);
 	}
+	
+	//LA 
+	public void generateSpear(){
+		Random r = new Random();
+		while (true){
+			int x = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			int y = r.nextInt(labyrinth.getLabyrinth()[0].length-2)+1;
+			if (labyrinth.getLabyrinth()[x][y] == "  "){
+				Position p1 = new Position(x, y);
+				boolean jaExiste = false;
+				for (int j=0;j<labyrinth.getDragons().size();j++){
+					if(labyrinth.getDragons().get(j).getPosition().equals(p1)){
+						jaExiste = true;
+						break;
+					}
+				}
+				if (labyrinth.getHero().getPosition().equals(p1))
+					jaExiste = true;
+				if (labyrinth.getSword().getPosition().equals(p1))
+					jaExiste = true;
+				if (!jaExiste){
+					labyrinth.getSpear().setPosition(p1);
+					break;
+				}
+			}
+		}
+	}
+	
+	
 	
 	public void saveGame(){
 		//a fazer

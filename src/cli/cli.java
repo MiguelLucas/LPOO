@@ -20,6 +20,9 @@ public class cli {
 		game.generateSword();
 		if (game.isSettingSledgehammer())
 			game.generateSledgehammer();
+		//LA
+		if (game.isSettingSpear())
+		game.generateSpear();
 		
 		printLabyrinth(game);
 		while (game.getLabyrinth().getEndGame() == 0){
@@ -33,9 +36,11 @@ public class cli {
 					if(game.isSettingMove()){
 
 						game.getLabyrinth().moveDragon(game.getLabyrinth().getDragons().get(i));
+						
 					}
 					game.getLabyrinth().heroKillsDragon(game.getLabyrinth().getDragons().get(i));
 					game.getLabyrinth().dragonKillsHero(game.getLabyrinth().getDragons().get(i));
+					//game.getLabyrinth().spearKillsDragon(game.getLabyrinth().getDragons().get(i));
 					if(game.isSettingSleep()){
 						game.getLabyrinth().getDragons().get(i).goToSleep(game.getSleepRate());
 					}
@@ -129,12 +134,10 @@ public class cli {
 					System.out.println("[4] Enable/disable sledgehammer (Disabled)");
 				/*
 			restantes ficam aqui para futuro uso
-
 			if (l.isSetting_dragon_fire())
 				System.out.println("[1] Enable/disable dragon fire (Enabled)");
 			else
 				System.out.println("[1] Enable/disable dragon fire (Disabled)");
-
 			if (l.isSetting_spear())
 				System.out.println("[4] Enable/disable retrivable spears (Enabled)");
 			else
@@ -238,6 +241,13 @@ public class cli {
 	}
 
 	public static void moveHeroCli(GameState game){
+		
+		if (game.getLabyrinth().getHero().isArmedSledgehammer() && game.getLabyrinth().getHero().isArmedSpear())
+			System.out.println("W-Up, S-Down, A-Left, D-Right, U-Use Sledgehammer, Y-Trow Spear, E-Exit Game");
+		else
+		if (game.getLabyrinth().getHero().isArmedSpear())
+			System.out.println("W-Up, S-Down, A-Left, D-Right, Y-Trow Spear, E-Exit Game");
+		else
 		if (game.getLabyrinth().getHero().isArmedSledgehammer())
 			System.out.println("W-Up, S-Down, A-Left, D-Right, U-Use Sledgehammer, E-Exit Game");
 		else {
@@ -262,6 +272,15 @@ public class cli {
 		case 'U':
 			if (game.getLabyrinth().getHero().isArmedSledgehammer())
 				useSledgehammerCli(game);
+			else {
+				System.out.println("Invalid direction.");
+				moveHeroCli(game);
+			}
+			break;
+			//LA
+		case 'Y':
+			if (game.getLabyrinth().getHero().isArmedSpear())
+				useSpearCli(game);
 			else {
 				System.out.println("Invalid direction.");
 				moveHeroCli(game);
@@ -303,16 +322,110 @@ public class cli {
 		}
 	}
 	
+	//LA
+	public static void useSpearCli(GameState game){
+		System.out.println("Choose the direction you wish to aim the spear \nW-Up, S-Down, A-Left, D-Right");
+		//Encontrar o problema daqui? 
+		Scanner sc_s = new Scanner(System.in);
+		char move = Character.toUpperCase(sc_s.next().charAt(0));
+		switch(move){
+		//up
+		case 'W':
+			game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getHero().getPosition());
+			Position p = new Position(game.getLabyrinth().getSpear().getPosition().getX(),game.getLabyrinth().getSpear().getPosition().getY());  	
+			while(game.getLabyrinth().getLabyrinth()[p.getY()][p.getX()]!="X "){
+				p.setY(p.getY()-1); 
+				//todos os dragoes
+				for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+					if(game.getLabyrinth().getDragons().get(i).getPosition().getX() == p.getX() && game.getLabyrinth().getDragons().get(i).getPosition().getY() == p.getY()){
+						//System.out.println("estou a mover-me para up");
+						game.getLabyrinth().getSpear().setIcon("^ "); 
+						game.getLabyrinth().spearKillsDragon(game.getLabyrinth().getDragons().get(i), game.getLabyrinth().getSpear().getIcon());
+						//game.getLabyrinth().getDragons().get(i).setDead(true); 
+						game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getDragons().get(i).getPosition()); 
+						//printLabyrinth(game);
+						break; 
+				    }
+				}	
+			}
+			game.getLabyrinth().useSpear(0);
+			break;
+		//down
+		case 'S':
+			game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getHero().getPosition());
+			Position p1 = new Position(game.getLabyrinth().getSpear().getPosition().getX(),game.getLabyrinth().getSpear().getPosition().getY());  	
+			while(game.getLabyrinth().getLabyrinth()[p1.getY()][p1.getX()]!="X "){
+				p1.setY(p1.getY()+1); 
+				//todos os dragoes
+				for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+					if(game.getLabyrinth().getDragons().get(i).getPosition().getX() == p1.getX() && game.getLabyrinth().getDragons().get(i).getPosition().getY() == p1.getY()){
+						game.getLabyrinth().getSpear().setIcon("v"); 
+						game.getLabyrinth().spearKillsDragon(game.getLabyrinth().getDragons().get(i), game.getLabyrinth().getSpear().getIcon());
+						game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getDragons().get(i).getPosition()); 
+						//printLabyrinth(game);
+						break; 
+					}
+				}
+			}	
+			game.getLabyrinth().useSpear(1);
+			break;
+		//lefthuerda
+		case 'A':
+			game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getHero().getPosition());
+			Position p2 = new Position(game.getLabyrinth().getSpear().getPosition().getX(),game.getLabyrinth().getSpear().getPosition().getY());  	
+			while(game.getLabyrinth().getLabyrinth()[p2.getY()][p2.getX()]!="X "){
+				p2.setX(p2.getX()-1); 
+				//todos os dragoes
+				for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+					if(game.getLabyrinth().getDragons().get(i).getPosition().getX() == p2.getX() && game.getLabyrinth().getDragons().get(i).getPosition().getY() == p2.getY()){
+						game.getLabyrinth().getSpear().setIcon("<"); 
+						game.getLabyrinth().spearKillsDragon(game.getLabyrinth().getDragons().get(i), game.getLabyrinth().getSpear().getIcon());
+						//game.getLabyrinth().getDragons().get(i).setDead(true); 
+						game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getDragons().get(i).getPosition()); 
+						break;
+				    }
+				}	
+			}
+			game.getLabyrinth().useSpear(2);
+			break;	
+			//direita 
+		case 'D':
+			game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getHero().getPosition());
+			Position p3 = new Position(game.getLabyrinth().getSpear().getPosition().getX(),game.getLabyrinth().getSpear().getPosition().getY());  	
+			while(game.getLabyrinth().getLabyrinth()[p3.getY()][p3.getX()]!="X " && game.getLabyrinth().getLabyrinth()[p3.getY()][p3.getX()]!="S "){
+				p3.setX(p3.getX()+1); 
+				//todos os dragoes
+				for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
+					if(game.getLabyrinth().getDragons().get(i).getPosition().getX() == p3.getX() && game.getLabyrinth().getDragons().get(i).getPosition().getY() == p3.getY()){
+						game.getLabyrinth().getSpear().setIcon(">"); 
+						game.getLabyrinth().spearKillsDragon(game.getLabyrinth().getDragons().get(i), game.getLabyrinth().getSpear().getIcon());
+						game.getLabyrinth().getSpear().setPosition(game.getLabyrinth().getDragons().get(i).getPosition());
+						//game.getLabyrinth().spearAndDragon(game.getLabyrinth().getDragons().get(i).getPosition());
+						break; 
+				    }
+				}	
+			}
+			game.getLabyrinth().useSpear(3);
+			break;	
+		default:
+			System.out.println("Invalid direction.");
+			useSpearCli(game);
+			break;
+		}
+	}
+	
+	
 	public static void printLabyrinth(GameState game){
+		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSpear().getPosition().getY()][game.getLabyrinth().getSpear().getPosition().getX()] = game.getLabyrinth().getSpear().getIcon();
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSledgehammer().getPosition().getY()][game.getLabyrinth().getSledgehammer().getPosition().getX()] = game.getLabyrinth().getSledgehammer().getIcon();
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getSword().getPosition().getY()][game.getLabyrinth().getSword().getPosition().getX()] = game.getLabyrinth().getSword().getIcon();
 		for (int i=0;i<game.getLabyrinth().getDragons().size();i++){
 			game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getDragons().get(i).getPosition().getY()][game.getLabyrinth().getDragons().get(i).getPosition().getX()] = game.getLabyrinth().getDragons().get(i).getIcon();
 		}
 		game.getLabyrinth().getLabyrinth()[game.getLabyrinth().getHero().getPosition().getY()][game.getLabyrinth().getHero().getPosition().getX()] = game.getLabyrinth().getHero().getIcon();
-		
-		ArrayList<Position> positions = fogOfWar2(game);
 		//imprime o labirinto com fog of war
+		/*
+		ArrayList<Position> positions = fogOfWar2(game);
 		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
 				Position p1 = new Position(i, j);
@@ -323,22 +436,22 @@ public class cli {
 				}
 			}
 			System.out.println();	
-		}
+		}*/
 		
 		//imprime o labirinto normal
-		/*for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
+		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
 				System.out.print(game.getLabyrinth().getLabyrinth()[i][j]);
 			}
 			System.out.println();	
-		}*/
+		}
 		
 		
 		printInventory(game);
 		printMessage(game);
 	}
-	
-	public static ArrayList<Position> fogOfWar(GameState game){
+	//Adicionar neblina e nevoeiro matinal 
+	/*public static ArrayList<Position> fogOfWar(GameState game){
 		ArrayList<Position> positions = new ArrayList<Position>();
 		for(int i=0;i<game.getLabyrinth().getLabyrinth()[0].length;i++){
 			for(int j=0;j<game.getLabyrinth().getLabyrinth()[1].length;j++){
@@ -411,10 +524,10 @@ public class cli {
 		positions.add(posHero);
 		/*for(int i=0;i<positions.size();i++){
 			System.out.println(positions.get(i).toString() + "\n");
-		}*/
+		}
 		return positions;
 	}
-
+*/
 	public static void printInventory(GameState game){
 		System.out.println("----------------------");
 		System.out.println("Hero's inventory: ");
@@ -422,6 +535,9 @@ public class cli {
 			System.out.println("1x Sword ");
 		if (game.getLabyrinth().getHero().isArmedSledgehammer())
 			System.out.println("1x Sledgehammer (" + game.getLabyrinth().getSledgehammer().getUses() + " uses left)");
+		//LA
+		if (game.getLabyrinth().getHero().isArmedSpear())
+			System.out.println("1x Spear ");
 		else
 			System.out.println("Nothing");
 		//a acrescentar mais items conforme se vão criando
